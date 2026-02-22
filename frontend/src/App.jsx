@@ -16,7 +16,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-slate-950 text-white">
+        <div className="min-h-screen bg-cream-50 text-text-primary">
           <Routes>
             {/* Auth pages — no Navbar */}
             <Route path="/login" element={<LoginPage />} />

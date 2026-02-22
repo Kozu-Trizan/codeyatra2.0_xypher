@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@theme {
+  --color-cream-50: #FFFDF7;
+  --color-cream-100: #FFF9E6;
+  --color-cream-200: #FFF3CC;
+  --color-cream-300: #FFE999;
+  --color-amber-brand: #F5B800;
+  --color-amber-hover: #E5AB00;
+  --color-amber-light: #FFF3CC;
+  --color-text-primary: #1A1A2E;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+}
+
+body {
+  background-color: var(--color-cream-50);
+  color: var(--color-text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
