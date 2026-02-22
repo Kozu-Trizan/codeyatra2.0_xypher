@@ -7,9 +7,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:5000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        // Flask routes are already prefixed /api/… so no rewrite needed
       },
     },
   },
