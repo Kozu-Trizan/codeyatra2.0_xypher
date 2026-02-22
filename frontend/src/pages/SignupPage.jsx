@@ -64,7 +64,7 @@ export default function SignupPage() {
 
   const field = (name, label, type = "text", placeholder = "") => (
     <div>
-      <label className="block text-xs font-medium text-slate-400 mb-1.5">
+      <label className="block text-xs font-medium text-text-secondary mb-1.5">
         {label}
       </label>
       <input
@@ -75,41 +75,36 @@ export default function SignupPage() {
         required
         placeholder={placeholder}
         className={`w-full rounded-lg border ${
-          errors[name] ? "border-red-600" : "border-slate-700"
-        } bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition`}
+          errors[name] ? "border-red-400" : "border-gray-300"
+        } bg-white px-4 py-2.5 text-sm text-text-primary placeholder-gray-400 focus:border-amber-brand focus:outline-none focus:ring-1 focus:ring-amber-brand transition`}
       />
       {errors[name] && (
-        <p className="mt-1 text-xs text-red-400">{errors[name]}</p>
+        <p className="mt-1 text-xs text-red-500">{errors[name]}</p>
       )}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 py-12">
-      {/* Glow */}
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] rounded-full bg-indigo-700/15 blur-[120px]" />
-      </div>
-
+    <div className="min-h-screen bg-cream-50 flex items-center justify-center px-4 py-12">
       <div className="relative w-full max-w-md">
         {/* Brand */}
         <div className="flex justify-center mb-8">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white text-base">
-              S
+            <div className="w-9 h-9 rounded-full bg-amber-brand flex items-center justify-center font-black text-white text-base">
+              A
             </div>
-            <span className="font-bold text-white text-xl tracking-tight">
-              SikshyaMap <span className="text-indigo-400">AI</span>
+            <span className="font-bold text-text-primary text-xl tracking-tight">
+              Aarvana
             </span>
           </Link>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur p-8">
-          <h1 className="text-2xl font-bold text-white mb-1">
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
+          <h1 className="text-2xl font-bold text-text-primary mb-1">
             Create your account
           </h1>
-          <p className="text-slate-400 text-sm mb-8">
+          <p className="text-text-secondary text-sm mb-8">
             Free forever. No credit card required.
           </p>
 
@@ -125,7 +120,7 @@ export default function SignupPage() {
             )}
 
             {serverError && (
-              <div className="rounded-lg border border-red-800/50 bg-red-950/40 px-4 py-3 text-sm text-red-400">
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 {serverError}
               </div>
             )}
@@ -133,17 +128,17 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 active:scale-95 py-2.5 font-semibold text-white transition-all mt-1"
+              className="w-full rounded-xl bg-amber-brand hover:bg-amber-hover disabled:opacity-50 active:scale-95 py-2.5 font-semibold text-white transition-all mt-1"
             >
               {loading ? "Creating account…" : "Create Account →"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-500">
+          <p className="mt-6 text-center text-sm text-text-muted">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+              className="text-amber-brand hover:text-amber-hover font-medium transition-colors"
             >
               Log in
             </Link>
