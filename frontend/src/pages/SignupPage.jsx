@@ -33,7 +33,9 @@ export default function SignupPage() {
     return errs;
   }
 
-  function handleSubmit(e) {
+  const [serverError, setServerError] = useState("");
+
+  async function handleSubmit(e) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) {
@@ -41,9 +43,23 @@ export default function SignupPage() {
       return;
     }
     setLoading(true);
-    signup({ name: form.name, email: form.email, password: form.password });
-    setLoading(false);
-    navigate("/onboarding", { replace: true });
+    setServerError("");
+    try {
+      const result = await signup({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      });
+      if (!result.ok) {
+        setServerError(result.error);
+        return;
+      }
+      navigate("/onboarding", { replace: true });
+    } catch {
+      setServerError("Could not reach server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const field = (name, label, type = "text", placeholder = "") => (
@@ -106,6 +122,12 @@ export default function SignupPage() {
               "Confirm Password",
               "password",
               "repeat password",
+            )}
+
+            {serverError && (
+              <div className="rounded-lg border border-red-800/50 bg-red-950/40 px-4 py-3 text-sm text-red-400">
+                {serverError}
+              </div>
             )}
 
             <button

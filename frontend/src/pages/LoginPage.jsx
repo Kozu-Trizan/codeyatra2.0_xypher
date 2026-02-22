@@ -22,18 +22,26 @@ export default function LoginPage() {
     setError("");
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    const result = login({ email: form.email, password: form.password });
-    setLoading(false);
-    if (!result.ok) {
-      setError(result.error);
-      return;
+    try {
+      const result = await login({
+        email: form.email,
+        password: form.password,
+      });
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      navigate(result.user.onboardingDone ? from : "/onboarding", {
+        replace: true,
+      });
+    } catch {
+      setError("Could not reach server. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    navigate(result.user.onboardingDone ? from : "/onboarding", {
-      replace: true,
-    });
   }
 
   return (
