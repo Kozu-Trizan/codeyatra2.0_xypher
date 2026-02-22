@@ -14,21 +14,21 @@ const PREREQ_LABELS = {
 const STATUS_META = {
   passed: {
     label: "Passed",
-    color: "text-emerald-400",
-    bg: "bg-emerald-900/30 border-emerald-800",
+    color: "text-emerald-600",
+    bg: "bg-emerald-100 border-emerald-200",
     dot: "bg-emerald-400",
   },
   needs_review: {
     label: "Needs Review",
-    color: "text-amber-400",
-    bg: "bg-amber-900/30 border-amber-800",
+    color: "text-amber-brand",
+    bg: "bg-amber-100 border-amber-200",
     dot: "bg-amber-400",
   },
   not_started: {
     label: "Not Started",
-    color: "text-slate-400",
-    bg: "bg-slate-800/30 border-slate-700",
-    dot: "bg-slate-600",
+    color: "text-text-secondary",
+    bg: "bg-gray-100 border-gray-300",
+    dot: "bg-gray-400",
   },
 };
 
@@ -65,8 +65,8 @@ export default function ProgressPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
-          <p className="text-slate-400 text-sm">Loading your progress…</p>
+          <div className="w-8 h-8 rounded-full border-2 border-amber-brand border-t-transparent animate-spin" />
+          <p className="text-text-secondary text-sm">Loading your progress…</p>
         </div>
       </div>
     );
@@ -75,11 +75,11 @@ export default function ProgressPage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <p className="text-red-400 font-medium">Failed to load progress</p>
-        <p className="text-slate-500 text-sm">{error}</p>
+        <p className="text-red-500 font-medium">Failed to load progress</p>
+        <p className="text-text-muted text-sm">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm transition-colors"
+          className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm transition-colors"
         >
           Retry
         </button>
@@ -111,36 +111,36 @@ export default function ProgressPage() {
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-2xl">📊</span>
-          <h2 className="text-3xl font-bold text-white">My Progress</h2>
+          <h2 className="text-3xl font-bold text-text-primary">My Progress</h2>
         </div>
-        <p className="text-slate-400 text-sm">
+        <p className="text-text-secondary text-sm">
           Track which concepts you've been diagnosed on and where your gaps are.
         </p>
       </div>
 
       {/* Stats bar */}
       <div className="grid grid-cols-3 gap-4 mb-8">
-        <StatCard value={passed} label="Passed" color="text-emerald-400" />
-        <StatCard value={reviewed} label="Need Review" color="text-amber-400" />
+        <StatCard value={passed} label="Passed" color="text-emerald-600" />
+        <StatCard value={reviewed} label="Need Review" color="text-amber-brand" />
         <StatCard
           value={total - passed - reviewed}
           label="Not Started"
-          color="text-slate-400"
+          color="text-text-secondary"
         />
       </div>
 
       {/* Progress bar */}
       {total > 0 && (
         <div className="mb-8">
-          <div className="flex justify-between text-xs text-slate-500 mb-1.5">
+          <div className="flex justify-between text-xs text-text-muted mb-1.5">
             <span>Overall coverage</span>
             <span>
               {passed + reviewed}/{total} concepts diagnosed
             </span>
           </div>
-          <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+          <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-indigo-500 transition-all duration-700"
+              className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-amber-brand transition-all duration-700"
               style={{
                 width: `${Math.round(((passed + reviewed) / total) * 100)}%`,
               }}
@@ -156,7 +156,7 @@ export default function ProgressPage() {
           return (
             <div
               key={row.id}
-              className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 flex items-center gap-4"
+              className="rounded-2xl border border-gray-200 bg-white p-4 flex items-center gap-4"
             >
               {/* Status dot */}
               <div
@@ -165,8 +165,8 @@ export default function ProgressPage() {
 
               {/* Name + class */}
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-white truncate">{row.name}</p>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="font-medium text-text-primary truncate">{row.name}</p>
+                <p className="text-xs text-text-muted mt-0.5">
                   Class {row.class}
                   {row.diagnosedAt
                     ? ` · Last diagnosed ${new Date(row.diagnosedAt).toLocaleDateString()}`
@@ -185,7 +185,7 @@ export default function ProgressPage() {
               {row.status !== "passed" && (
                 <button
                   onClick={() => navigate("/diagnose")}
-                  className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600 border border-indigo-700 hover:border-indigo-500 text-indigo-300 hover:text-white transition-all font-medium"
+                  className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-amber-brand/10 hover:bg-amber-brand border border-amber-brand hover:border-amber-brand text-amber-brand hover:text-text-primary transition-all font-medium"
                 >
                   Diagnose
                 </button>
@@ -198,10 +198,10 @@ export default function ProgressPage() {
       {/* Empty state */}
       {rows.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-slate-400 mb-4">No diagnostics run yet.</p>
+          <p className="text-text-secondary mb-4">No diagnostics run yet.</p>
           <button
             onClick={() => navigate("/diagnose")}
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-sm transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-amber-brand hover:bg-amber-hover font-semibold text-sm transition-colors"
           >
             Start Your First Diagnosis →
           </button>
@@ -210,19 +210,19 @@ export default function ProgressPage() {
 
       {/* Motivational CTA */}
       {rows.length > 0 && total - passed - reviewed > 0 && (
-        <div className="mt-8 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-violet-900/40 border border-indigo-800/50 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="mt-8 rounded-2xl bg-gradient-to-r from-amber-brand/10 to-cream-200 border border-amber-200 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <p className="font-semibold text-white">
+            <p className="font-semibold text-text-primary">
               {total - passed - reviewed} concept
               {total - passed - reviewed !== 1 ? "s" : ""} left to explore
             </p>
-            <p className="text-slate-400 text-sm mt-0.5">
+            <p className="text-text-secondary text-sm mt-0.5">
               Keep diagnosing to complete your map.
             </p>
           </div>
           <button
             onClick={() => navigate("/diagnose")}
-            className="shrink-0 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-sm transition-colors"
+            className="shrink-0 px-5 py-2.5 rounded-xl bg-amber-brand hover:bg-amber-hover font-semibold text-sm transition-colors"
           >
             Continue →
           </button>
@@ -234,9 +234,9 @@ export default function ProgressPage() {
 
 function StatCard({ value, label, color }) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-center">
+    <div className="rounded-2xl border border-gray-200 bg-white p-4 text-center">
       <p className={`text-3xl font-bold ${color}`}>{value}</p>
-      <p className="text-slate-400 text-xs mt-1">{label}</p>
+      <p className="text-text-secondary text-xs mt-1">{label}</p>
     </div>
   );
 }

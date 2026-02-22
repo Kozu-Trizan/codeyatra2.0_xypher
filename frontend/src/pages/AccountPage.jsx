@@ -39,25 +39,25 @@ export default function AccountPage() {
     <div className="max-w-xl mx-auto px-6 py-14">
       {/* Header */}
       <div className="flex items-center gap-4 mb-10">
-        <div className="w-14 h-14 rounded-full bg-indigo-700 flex items-center justify-center text-xl font-bold text-white">
+        <div className="w-14 h-14 rounded-full bg-amber-brand flex items-center justify-center text-xl font-bold text-text-primary">
           {initials}
         </div>
         <div>
-          <h1 className="text-xl font-bold text-white">{user?.name}</h1>
-          <p className="text-slate-400 text-sm">{user?.email}</p>
+          <h1 className="text-xl font-bold text-text-primary">{user?.name}</h1>
+          <p className="text-text-secondary text-sm">{user?.email}</p>
         </div>
       </div>
 
       {/* Settings Card */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-7 mb-6">
-        <h2 className="font-semibold text-white mb-6 text-sm uppercase tracking-widest text-slate-400">
+      <div className="rounded-2xl border border-gray-200 bg-white p-7 mb-6">
+        <h2 className="font-semibold text-text-primary mb-6 text-sm uppercase tracking-widest text-text-secondary">
           Study Profile
         </h2>
 
         <form onSubmit={handleSave} className="flex flex-col gap-6">
           {/* Class */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">
+            <label className="block text-xs font-medium text-text-secondary mb-2">
               Class
             </label>
             <div className="flex gap-3">
@@ -68,8 +68,8 @@ export default function AccountPage() {
                   onClick={() => setStudentClass(c.value)}
                   className={`flex-1 rounded-xl border-2 py-3 text-sm font-semibold transition-all ${
                     studentClass === c.value
-                      ? "border-indigo-500 bg-indigo-950/60 text-white"
-                      : "border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-500"
+                      ? "border-amber-brand bg-amber-brand/10 text-text-primary"
+                      : "border-gray-300 bg-gray-100 text-text-secondary hover:border-gray-400"
                   }`}
                 >
                   {c.label}
@@ -80,7 +80,7 @@ export default function AccountPage() {
 
           {/* Subject */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">
+            <label className="block text-xs font-medium text-text-secondary mb-2">
               Subject
             </label>
             <div className="flex flex-col gap-2">
@@ -92,20 +92,20 @@ export default function AccountPage() {
                   onClick={() => s.available && setSubject(s.value)}
                   className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold text-left transition-all flex items-center justify-between ${
                     !s.available
-                      ? "border-slate-800 bg-slate-900/40 text-slate-600 cursor-not-allowed"
+                      ? "border-gray-200 bg-gray-50 text-text-muted cursor-not-allowed"
                       : subject === s.value
-                        ? "border-indigo-500 bg-indigo-950/60 text-white"
-                        : "border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-500"
+                        ? "border-amber-brand bg-amber-brand/10 text-text-primary"
+                        : "border-gray-300 bg-gray-100 text-text-secondary hover:border-gray-400"
                   }`}
                 >
                   <span>{s.label}</span>
                   {!s.available && (
-                    <span className="text-[10px] text-slate-600 bg-slate-800 border border-slate-700 rounded px-1.5 py-0.5">
+                    <span className="text-[10px] text-text-muted bg-gray-100 border border-gray-300 rounded px-1.5 py-0.5">
                       Coming soon
                     </span>
                   )}
                   {subject === s.value && s.available && (
-                    <span className="text-indigo-400 text-xs">✓</span>
+                    <span className="text-amber-brand text-xs">✓</span>
                   )}
                 </button>
               ))}
@@ -114,7 +114,7 @@ export default function AccountPage() {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 py-2.5 font-semibold text-white transition-all"
+            className="w-full rounded-xl bg-amber-brand hover:bg-amber-hover active:scale-95 py-2.5 font-semibold text-text-primary transition-all"
           >
             {saved ? "✓ Saved!" : "Save Changes"}
           </button>
@@ -122,11 +122,11 @@ export default function AccountPage() {
       </div>
 
       {/* Danger zone */}
-      <div className="rounded-2xl border border-red-900/40 bg-red-950/20 p-6">
-        <h2 className="text-sm font-semibold text-red-400 mb-4">Danger Zone</h2>
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
+        <h2 className="text-sm font-semibold text-red-500 mb-4">Danger Zone</h2>
         <button
           onClick={logout}
-          className="rounded-xl border border-red-800/50 bg-red-950/40 hover:bg-red-900/40 px-5 py-2 text-sm font-semibold text-red-400 hover:text-red-300 transition-all"
+          className="rounded-xl border border-red-200 bg-red-50 hover:bg-red-50 px-5 py-2 text-sm font-semibold text-red-500 hover:text-red-500 transition-all"
         >
           Log Out
         </button>
