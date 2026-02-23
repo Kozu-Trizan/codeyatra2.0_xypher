@@ -92,10 +92,11 @@ class Checkpoint(db.Model):
     )
     order = db.Column(db.Integer, nullable=False)  # display / progression order
     question = db.Column(db.Text, nullable=False)
-    correct_answer = db.Column(db.Float, nullable=False)
+    correct_answer = db.Column(db.String(256), nullable=False)
     unit = db.Column(db.String(32), nullable=True)  # e.g. "m/s", "N"
     input_type = db.Column(db.String(32), default="multiple_choice", nullable=False)
     hint = db.Column(db.Text, nullable=True)  # optional static hint
+    instruction = db.Column(db.Text, nullable=True)  # step instruction text
 
     # Tolerance for numeric comparison (e.g. ±0.5 for rounding)
     tolerance = db.Column(db.Float, default=0.01, nullable=False)
@@ -163,7 +164,7 @@ class CheckpointChoice(db.Model):
         index=True,
     )
     label = db.Column(db.String(256), nullable=False)  # display text, e.g. "17.3 m/s"
-    value = db.Column(db.Float, nullable=False)         # numeric value
+    value = db.Column(db.String(256), nullable=False)   # value (string or numeric)
     is_correct = db.Column(db.Boolean, default=False, nullable=False)
 
     created_at = db.Column(
@@ -208,7 +209,7 @@ class ErrorPattern(db.Model):
         nullable=False,
         index=True,
     )
-    trigger_value = db.Column(db.Float, nullable=False)
+    trigger_value = db.Column(db.String(256), nullable=False)
     trigger_tolerance = db.Column(db.Float, default=0.5, nullable=False)
 
     error_type = db.Column(db.String(64), nullable=False)

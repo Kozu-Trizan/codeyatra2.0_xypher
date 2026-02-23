@@ -8,6 +8,7 @@ POST /api/diagnose/evaluate   — evaluate answers and update mastery
 from datetime import datetime, timezone
 
 from flask import Blueprint, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.models import (
     db,
@@ -23,15 +24,16 @@ diagnose_bp = Blueprint("diagnose", __name__)
 
 
 @diagnose_bp.route("", methods=["POST"])
+@jwt_required()
 def start_diagnostic():
     data = request.get_json(silent=True) or {}
 
-    student_id = data.get("student_id")
+    student_id = get_jwt_identity()          # from JWT – always present
     concept_id = data.get("concept_id")
     num_questions = data.get("num_questions", 5)
 
-    if not student_id or not concept_id:
-        return error_response("VALIDATION_ERROR", "student_id and concept_id are required.", {}, 400)
+    if not concept_id:
+        return error_response("VALIDATION_ERROR", "concept_id is required.", {}, 400)
 
     concept = Concept.query.get(concept_id)
     if concept is None:
@@ -74,6 +76,7 @@ def start_diagnostic():
 
 
 @diagnose_bp.route("/evaluate", methods=["POST"])
+@jwt_required()
 def evaluate_diagnostic():
     data = request.get_json(silent=True) or {}
 

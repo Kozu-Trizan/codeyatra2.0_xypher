@@ -104,7 +104,7 @@ export default function PathfinderPage() {
             >
               <option value="">— Select a concept —</option>
               {concepts.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}{c.class ? ` (Class ${c.class})` : ""}</option>
+                <option key={c.id} value={c.id}>{c.name}{c.neb_class ? ` (Class ${c.neb_class})` : ""}</option>
               ))}
             </select>
             <button
@@ -149,8 +149,8 @@ export default function PathfinderPage() {
 /* ───────────────────── Roadmap Visualization ───────────────────── */
 
 function RoadmapTree({ path, onDiagnose }) {
-  const prereqs = path.path || [];
-  const target = path.concept;
+  const prereqs = path.prerequisite_chain || path.path || [];
+  const target = path.concept ?? { id: path.concept_id, name: path.concept_name };
 
   /* Group nodes into tiers (reversed: foundation at bottom) */
   const tiers = [];

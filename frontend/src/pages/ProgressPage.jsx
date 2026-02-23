@@ -12,13 +12,21 @@ const PREREQ_LABELS = {
 };
 
 const STATUS_META = {
-  passed: {
+  mastered: {
     label: "Mastered",
     emoji: "✅",
     color: "text-emerald-700",
     bg: "bg-emerald-50 border-emerald-200",
     dot: "bg-emerald-400",
     xp: 100,
+  },
+  in_progress: {
+    label: "In Progress",
+    emoji: "🔄",
+    color: "text-amber-700",
+    bg: "bg-amber-50 border-amber-200",
+    dot: "bg-amber-400",
+    xp: 30,
   },
   needs_review: {
     label: "Needs Review",
@@ -104,31 +112,36 @@ export default function ProgressPage() {
     );
   }
 
-  const raw = progressData?.progress || {};
+  /* Build rows from backend concepts array (from /api/progress/:id response) */
+  const progressConcepts = progressData?.concepts ?? [];
   const statusMap = {};
-  Object.entries(raw).forEach(([conceptId, entry]) => {
-    statusMap[conceptId] = entry.status || "not_started";
+  progressConcepts.forEach((entry) => {
+    statusMap[entry.id] = entry.status || "not_started";
   });
 
-  const rows = concepts.map((c) => ({
-    ...c,
-    status: statusMap[c.id] || "not_started",
-    diagnosedAt: raw[c.id]?.diagnosed_at || null,
-  }));
+  const rows = concepts.map((c) => {
+    const entry = progressConcepts.find((p) => p.id === c.id);
+    return {
+      ...c,
+      status: entry?.status || "not_started",
+      lastAttempted: entry?.last_attempted_at || null,
+      masteredAt: entry?.mastered_at || null,
+    };
+  });
 
-  const passed = rows.filter((r) => r.status === "passed").length;
-  const reviewed = rows.filter((r) => r.status === "needs_review").length;
-  const notStarted = rows.length - passed - reviewed;
-  const totalXp = passed * 100 + reviewed * 30;
+  const mastered = rows.filter((r) => r.status === "mastered").length;
+  const reviewed = rows.filter((r) => r.status === "in_progress" || r.status === "needs_review").length;
+  const notStarted = rows.length - mastered - reviewed;
+  const totalXp = mastered * 100 + reviewed * 30;
   const levelInfo = getLevel(totalXp);
 
   /* Achievements */
   const achievements = [];
-  if (passed >= 1) achievements.push({ emoji: "🌟", label: "First Mastery", desc: "Mastered your first concept" });
-  if (passed >= 3) achievements.push({ emoji: "🔥", label: "On Fire", desc: "Mastered 3 concepts" });
-  if (passed >= 5) achievements.push({ emoji: "🏆", label: "Champion", desc: "Mastered 5 concepts" });
+  if (mastered >= 1) achievements.push({ emoji: "🌟", label: "First Mastery", desc: "Mastered your first concept" });
+  if (mastered >= 3) achievements.push({ emoji: "🔥", label: "On Fire", desc: "Mastered 3 concepts" });
+  if (mastered >= 5) achievements.push({ emoji: "🏆", label: "Champion", desc: "Mastered 5 concepts" });
   if (reviewed >= 1) achievements.push({ emoji: "🔍", label: "Detective", desc: "Diagnosed your first gap" });
-  if (passed + reviewed >= rows.length && rows.length > 0) achievements.push({ emoji: "🗺️", label: "Explorer", desc: "Diagnosed every concept" });
+  if (mastered + reviewed >= rows.length && rows.length > 0) achievements.push({ emoji: "🗺️", label: "Explorer", desc: "Diagnosed every concept" });
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-10">
@@ -170,7 +183,7 @@ export default function ProgressPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-3 gap-3 mb-6">
-        <StatCard value={passed} label="Mastered" emoji="✅" color="text-emerald-600" bgColor="bg-emerald-50 border-emerald-200" />
+        <StatCard value={mastered} label="Mastered" emoji="✅" color="text-emerald-600" bgColor="bg-emerald-50 border-emerald-200" />
         <StatCard value={reviewed} label="Reviewing" emoji="🔄" color="text-amber-600" bgColor="bg-amber-50 border-amber-200" />
         <StatCard value={notStarted} label="Remaining" emoji="⏳" color="text-gray-500" bgColor="bg-gray-50 border-gray-200" />
       </div>
@@ -180,10 +193,10 @@ export default function ProgressPage() {
         <div className="mb-6 rounded-xl bg-white border border-gray-200 p-4">
           <div className="flex justify-between text-xs text-text-muted mb-2">
             <span className="font-semibold">Mission Coverage</span>
-            <span>{passed + reviewed}/{rows.length} ({Math.round(((passed + reviewed) / rows.length) * 100)}%)</span>
+            <span>{mastered + reviewed}/{rows.length} ({Math.round(((mastered + reviewed) / rows.length) * 100)}%)</span>
           </div>
           <div className="h-2.5 rounded-full bg-gray-100 overflow-hidden flex">
-            <div className="h-full bg-emerald-400 transition-all duration-700" style={{ width: `${(passed / rows.length) * 100}%` }} />
+            <div className="h-full bg-emerald-400 transition-all duration-700" style={{ width: `${(mastered / rows.length) * 100}%` }} />
             <div className="h-full bg-amber-400 transition-all duration-700" style={{ width: `${(reviewed / rows.length) * 100}%` }} />
           </div>
           <div className="flex gap-4 mt-2 text-[10px] text-text-muted">
@@ -225,11 +238,11 @@ export default function ProgressPage() {
           return (
             <div key={row.id}
               className={`rounded-2xl border bg-white p-4 flex items-center gap-4 transition-all hover:shadow-sm ${
-                row.status === "passed" ? "border-emerald-200" : "border-gray-200"
+                row.status === "mastered" ? "border-emerald-200" : "border-gray-200"
               }`}>
               {/* Status icon */}
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm ${
-                row.status === "passed" ? "bg-emerald-100" : row.status === "needs_review" ? "bg-amber-100" : "bg-gray-100"
+                row.status === "mastered" ? "bg-emerald-100" : row.status === "in_progress" || row.status === "needs_review" ? "bg-amber-100" : "bg-gray-100"
               }`}>
                 {meta.emoji}
               </div>
@@ -238,8 +251,8 @@ export default function ProgressPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-text-primary text-sm truncate">{row.name}</p>
                 <p className="text-[11px] text-text-muted mt-0.5">
-                  {row.class ? `Class ${row.class}` : ""}
-                  {row.diagnosedAt ? ` · Diagnosed ${new Date(row.diagnosedAt).toLocaleDateString()}` : ""}
+                  {row.neb_class ? `Class ${row.neb_class}` : ""}
+                  {row.lastAttempted ? ` · Last attempt ${new Date(row.lastAttempted).toLocaleDateString()}` : ""}
                 </p>
               </div>
 
@@ -254,7 +267,7 @@ export default function ProgressPage() {
               </span>
 
               {/* Action */}
-              {row.status !== "passed" && (
+              {row.status !== "mastered" && (
                 <button onClick={() => navigate("/diagnose")}
                   className="shrink-0 text-[11px] px-3 py-1.5 rounded-lg bg-amber-brand hover:bg-amber-hover text-white font-bold transition-all active:scale-95">
                   🎯 Diagnose

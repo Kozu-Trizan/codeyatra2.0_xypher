@@ -37,7 +37,7 @@ from app.models import (
 # --------------------------------------------------------------------
 # Paths — JSON files live one level up (e:\Codeyatra_2_0\)
 # --------------------------------------------------------------------
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "Xtra")
 
 CONCEPT_FILE = os.path.join(DATA_DIR, "concepts.json")
 RESOURCE_FILE = os.path.join(DATA_DIR, "resources.json")
@@ -46,6 +46,10 @@ PROBLEM_FILES = [
     os.path.join(DATA_DIR, "vector_decomposition.json"),
     os.path.join(DATA_DIR, "projectile_motion.json"),
     os.path.join(DATA_DIR, "basic_algebra.json"),
+    os.path.join(DATA_DIR, "kinematic_equations.json"),
+    os.path.join(DATA_DIR, "rotational_dynamics.json"),
+    os.path.join(DATA_DIR, "electrophilic_addition.json"),
+    os.path.join(DATA_DIR, "area_under_curves.json"),
 ]
 
 # Map from slug to DB id (populated during concept seeding)
@@ -79,7 +83,7 @@ def seed_concepts():
     print("── Seeding concepts …")
     data = _load_json(CONCEPT_FILE)
 
-    # Subject / topic mapping (all are physics-related in the NEB context)
+    # Subject / topic mapping
     subject_map = {
         "basic_algebra": ("math", "Mathematics Foundation"),
         "right_triangles": ("math", "Geometry"),
@@ -87,17 +91,29 @@ def seed_concepts():
         "vector_decomposition": ("physics", "Mechanics"),
         "kinematic_equations": ("physics", "Mechanics"),
         "projectile_motion": ("physics", "Mechanics"),
+        "rotational_dynamics": ("physics", "Rotational Mechanics"),
+        "organic_chemistry_basics": ("chemistry", "Organic Chemistry"),
+        "electrophilic_addition": ("chemistry", "Organic Chemistry"),
+        "calculus_basics": ("math", "Calculus"),
+        "area_under_curves": ("math", "Calculus"),
     }
+
+    # Concepts that are NOT directly in the NEB syllabus chapters
+    # (they are foundational / dependency-only)
+    non_syllabus_slugs = {"basic_algebra", "right_triangles", "organic_chemistry_basics", "calculus_basics"}
 
     for c in data["concepts"]:
         slug = c["id"]
         subj, topic = subject_map.get(slug, ("physics", "General"))
+        is_syllabus = c.get("is_syllabus", slug not in non_syllabus_slugs)
         concept = Concept(
             name=c["name"],
             subject=subj,
             topic=topic,
             difficulty=c.get("difficulty", 1),
             description=c.get("description", ""),
+            is_syllabus=is_syllabus,
+            neb_class=c.get("neb_class"),
         )
         db.session.add(concept)
         db.session.flush()  # assigns concept.id immediately
@@ -200,15 +216,14 @@ def seed_problems():
 
             for cp_idx, cp_data in enumerate(prob.get("checkpoints", [])):
                 correct_val = None
-                # Find the correct answer value from choices
+                # Find the correct answer value from choices (keep as string)
                 for ch in cp_data.get("choices", []):
                     if ch.get("is_correct"):
-                        correct_val = _parse_numeric_value(ch.get("value", 0))
+                        correct_val = str(ch.get("value", ""))
                         break
 
                 if correct_val is None:
-                    # Default correct value for conceptual checkpoints
-                    correct_val = 1.0
+                    correct_val = ""
 
                 checkpoint = Checkpoint(
                     problem_id=problem.id,
@@ -218,40 +233,33 @@ def seed_problems():
                     unit=cp_data.get("unit", ""),
                     input_type=cp_data.get("type", "multiple_choice"),
                     hint=cp_data.get("hint_on_first_wrong", ""),
+                    instruction=cp_data.get("instruction"),
                     tolerance=0.5,  # generous for matching choice values
                 )
                 db.session.add(checkpoint)
                 db.session.flush()
                 total_cp += 1
 
-                # --- Choices ---
+                # --- Choices (store value as string) ---
                 for ch in cp_data.get("choices", []):
-                    raw_val = ch.get("value", 0)
-                    numeric_val = _parse_numeric_value(raw_val)
-                    label = str(raw_val) if isinstance(raw_val, str) else str(raw_val)
-
-                    if numeric_val is None:
-                        numeric_val = 0.0
+                    raw_val = ch.get("value", "")
+                    label = str(raw_val)
 
                     choice = CheckpointChoice(
                         checkpoint_id=checkpoint.id,
                         label=label,
-                        value=numeric_val,
+                        value=label,
                         is_correct=ch.get("is_correct", False),
                     )
                     db.session.add(choice)
                     total_ch += 1
 
-                # --- Error Patterns ---
+                # --- Error Patterns (store trigger as string) ---
                 for ep in cp_data.get("error_patterns", []):
                     missing_slug = ep.get("missing_concept_id", "")
                     missing_cid = concept_id_map.get(missing_slug)
 
-                    # Find the trigger value from the wrong choice label
-                    wrong_label = ep.get("wrong_choice", "")
-                    trigger_val = _parse_numeric_value(wrong_label)
-                    if trigger_val is None:
-                        trigger_val = 0.0
+                    wrong_label = str(ep.get("wrong_choice", ""))
 
                     # Derive error type from diagnosis text
                     diagnosis = ep.get("diagnosis", "")
@@ -259,7 +267,7 @@ def seed_problems():
 
                     pattern = ErrorPattern(
                         checkpoint_id=checkpoint.id,
-                        trigger_value=trigger_val,
+                        trigger_value=wrong_label,
                         trigger_tolerance=0.5,
                         error_type=error_type,
                         diagnosis_text=diagnosis,
@@ -298,6 +306,10 @@ def _infer_error_type(diagnosis: str, missing_slug: str) -> str:
         return "ALGEBRA_ERROR"
     if missing_slug == "right_triangles":
         return "GEOMETRY_ERROR"
+    if missing_slug == "organic_chemistry_basics":
+        return "ORGANIC_CHEM_ERROR"
+    if missing_slug == "calculus_basics":
+        return "CALCULUS_ERROR"
     return "UNKNOWN_ERROR"
 
 
@@ -351,6 +363,41 @@ def seed_diagnostic_questions():
             ("Maximum height depends on which component: Vx or Vy?", "Vy"),
             ("At maximum height, the vertical velocity equals?", "0"),
             ("True or False: Horizontal and vertical motions are independent.", "true"),
+        ],
+        "rotational_dynamics": [
+            ("Torque = r × F × sin(θ). If r=0.5m, F=10N, θ=90°, what is τ?", "5"),
+            ("For a uniform disk, the moment of inertia formula is I = ?MR². What is the fraction?", "0.5"),
+            ("If τ = 10 N·m and I = 2 kg·m², what is α (angular acceleration)?", "5"),
+            ("What is the rotational equivalent of Newton's second law F=ma?", "τ = Iα"),
+            ("True or False: Moment of inertia depends on mass distribution.", "true"),
+        ],
+        "organic_chemistry_basics": [
+            ("How many bonds does carbon typically form?", "4"),
+            ("What is the general formula for alkenes?", "CnH2n"),
+            ("An -OH functional group defines what class of organic compound?", "alcohol"),
+            ("Is a double bond (C=C) more or less reactive than a single bond?", "more"),
+            ("What type of bond is formed by sharing electrons?", "covalent"),
+        ],
+        "electrophilic_addition": [
+            ("In electrophilic addition, what part of the alkene acts as nucleophile?", "π bond"),
+            ("Markovnikov's rule: H adds to the carbon with ___ hydrogens.", "more"),
+            ("Which is more stable: a primary or secondary carbocation?", "secondary"),
+            ("What is the major product of HBr + propene?", "2-bromopropane"),
+            ("In HBr, which atom is the electrophile?", "H"),
+        ],
+        "calculus_basics": [
+            ("What is the derivative of x³?", "3x²"),
+            ("What is ∫x² dx?", "x³/3 + C"),
+            ("What is d/dx of 5x?", "5"),
+            ("The power rule for integration: ∫xⁿ dx = ?", "x^(n+1)/(n+1) + C"),
+            ("What is the derivative of a constant?", "0"),
+        ],
+        "area_under_curves": [
+            ("The area under a curve from a to b is found using?", "definite integral"),
+            ("If f(x) is below the x-axis, the integral is ___ (positive/negative)?", "negative"),
+            ("To find total area, we take the ___ value of below-axis integrals.", "absolute"),
+            ("∫₀¹ x² dx = ?", "1/3"),
+            ("If f(x) = x² − 1, where does f(x) = 0 for x > 0?", "1"),
         ],
     }
 

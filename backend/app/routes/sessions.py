@@ -112,7 +112,7 @@ def submit_answer(session_id):
     # Log the attempt
     log_attempt(session_id, {
         "checkpoint_id": checkpoint_id,
-        "selected_value": float(selected_value),
+        "selected_value": str(selected_value),
         "attempt_number": attempt_number,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "time_spent_seconds": time_spent,
@@ -121,7 +121,7 @@ def submit_answer(session_id):
     # Evaluate
     result = evaluate_checkpoint_answer(
         checkpoint=checkpoint,
-        student_answer=float(selected_value),
+        student_answer=str(selected_value),
         attempt_number=attempt_number,
         student_id=session["student_id"],
     )

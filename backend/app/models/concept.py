@@ -64,6 +64,8 @@ class Concept(db.Model):
     name = db.Column(db.String(256), nullable=False, unique=True)
     difficulty = db.Column(db.Integer, default=1, nullable=False, index=True)
     description = db.Column(db.Text, nullable=True)
+    is_syllabus = db.Column(db.Boolean, default=True, nullable=False)  # False = foundational/hidden
+    neb_class = db.Column(db.String(32), nullable=True)  # e.g. "11", "12"
 
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
@@ -187,6 +189,8 @@ class Concept(db.Model):
             "name": self.name,
             "difficulty": self.difficulty,
             "description": self.description,
+            "is_syllabus": self.is_syllabus,
+            "neb_class": self.neb_class,
         }
         if include_prerequisites:
             data["prerequisites"] = [

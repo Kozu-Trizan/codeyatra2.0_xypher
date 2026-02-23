@@ -26,6 +26,7 @@ export default function DiagnosePage() {
   const [screen, setScreen] = useState(S.LOADING_CONCEPTS);
   const [concepts, setConcepts] = useState([]);
   const [concept, setConcept] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -37,7 +38,7 @@ export default function DiagnosePage() {
   const loadConcepts = useCallback(async () => {
     setScreen(S.LOADING_CONCEPTS);
     try {
-      const res = await authFetch("/api/concepts");
+      const res = await authFetch("/api/concepts?syllabus_only=true&include_prerequisites=true");
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message ?? "Failed to load concepts.");
       const list = data?.data?.concepts ?? data ?? [];
@@ -61,7 +62,9 @@ export default function DiagnosePage() {
       const res = await authFetch("/api/diagnose", { method: "POST", body: JSON.stringify({ concept_id: c.id }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message ?? "Failed to generate questions.");
-      const q = data?.data?.questions ?? data?.questions ?? [];
+      const payload = data?.data ?? data;
+      setSessionId(payload.session_id);
+      const q = payload.questions ?? [];
       setQuestions(q);
       setScreen(S.QUIZ);
     } catch (e) {
@@ -70,18 +73,17 @@ export default function DiagnosePage() {
     }
   }
 
-  function handleChoose(choiceId) {
+  function handleAnswer(value) {
     const qId = questions[step]?.id;
-    setAnswers((prev) => ({ ...prev, [qId]: choiceId }));
-    setShowHint(false);
+    setAnswers((prev) => ({ ...prev, [qId]: value }));
   }
 
   async function handleNext() {
     if (step < questions.length - 1) { setStep((s) => s + 1); setShowHint(false); return; }
     setScreen(S.SUBMITTING);
     const payload = {
-      concept_id: concept.id,
-      answers: Object.entries(answers).map(([question_id, choice_id]) => ({ question_id, choice_id })),
+      session_id: sessionId,
+      answers: Object.entries(answers).map(([question_id, answer]) => ({ question_id: Number(question_id), answer })),
     };
     try {
       const [evalRes, resRes] = await Promise.all([
@@ -188,7 +190,7 @@ export default function DiagnosePage() {
   /* ── QUIZ ── */
   if (screen === S.QUIZ) {
     const q = questions[step];
-    const chosen = answers[q?.id];
+    const currentAnswer = answers[q?.id] ?? "";
     const isLast = step === questions.length - 1;
 
     return (
@@ -226,52 +228,40 @@ export default function DiagnosePage() {
           ))}
         </div>
 
-        {/* Problem statement (if q has context) */}
-        {q?.context && (
-          <div className="rounded-xl bg-amber-brand/5 border border-amber-200 px-5 py-3 mb-5 text-sm text-text-primary">
-            <span className="font-semibold">Problem: </span>{q.context}
-          </div>
-        )}
-
         {/* Question */}
         <div className="mb-2">
           <h3 className="text-lg font-bold text-text-primary">
             Step {step + 1} of {questions.length}
           </h3>
-          <p className="text-text-secondary text-sm mt-1 leading-relaxed">{q?.text}</p>
+          <p className="text-text-secondary text-sm mt-1 leading-relaxed">{q?.question_text}</p>
         </div>
 
-        {/* Given info */}
-        {q?.given && (
-          <div className="rounded-xl bg-cream-100 border border-cream-300 px-4 py-2.5 mb-5 text-sm text-text-secondary">
-            {q.given}
+        {/* Difficulty badge */}
+        {q?.difficulty && (
+          <div className="mb-5">
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+              q.difficulty <= 2 ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+              : q.difficulty <= 3 ? "bg-amber-100 text-amber-700 border-amber-200"
+              : "bg-rose-100 text-rose-700 border-rose-200"
+            }`}>
+              Difficulty: {q.difficulty}/5
+            </span>
           </div>
         )}
 
-        {/* Choices */}
-        <div className="flex flex-col gap-3 mb-6">
-          {q?.choices?.map((ch) => (
-            <button
-              key={ch.id}
-              onClick={() => handleChoose(ch.id)}
-              className={`group rounded-xl border-2 px-5 py-4 text-sm text-left transition-all flex items-center gap-4 ${
-                chosen === ch.id
-                  ? "border-amber-brand bg-amber-brand/10 shadow-sm shadow-amber-brand/10"
-                  : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
-              }`}
-            >
-              <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                chosen === ch.id
-                  ? "border-amber-brand bg-amber-brand"
-                  : "border-gray-300 bg-white group-hover:border-gray-400"
-              }`}>
-                {chosen === ch.id && <span className="text-white text-xs font-bold">✓</span>}
-              </div>
-              <span className={`${chosen === ch.id ? "text-text-primary font-medium" : "text-text-secondary"}`}>
-                {ch.text}
-              </span>
-            </button>
-          ))}
+        {/* Text input answer */}
+        <div className="mb-6">
+          <label className="block text-xs font-semibold text-text-secondary uppercase tracking-widest mb-2">
+            Your Answer
+          </label>
+          <input
+            type="text"
+            value={currentAnswer}
+            onChange={(e) => handleAnswer(e.target.value)}
+            placeholder="Type your answer here…"
+            className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-amber-brand/30 focus:border-amber-brand transition-all placeholder:text-text-muted"
+            onKeyDown={(e) => { if (e.key === "Enter" && currentAnswer.trim()) handleNext(); }}
+          />
         </div>
 
         {/* Hint */}
@@ -298,7 +288,7 @@ export default function DiagnosePage() {
             </button>
           ) : <div />}
           <button
-            disabled={!chosen}
+            disabled={!currentAnswer.trim()}
             onClick={handleNext}
             className="rounded-xl bg-amber-brand hover:bg-amber-hover disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 px-8 py-2.5 text-sm font-bold text-white transition-all shadow-sm shadow-amber-brand/20"
           >
@@ -311,12 +301,12 @@ export default function DiagnosePage() {
 
   /* ── RESULTS ── */
   if (screen === S.RESULTS && results) {
-    const passed = results.pass ?? !results.needs_bridge;
-    const prereqs = results.mapped_prereqs ?? [];
-    const checkpoints = results.results ?? [];
-    const correctCount = checkpoints.filter((c) => c.correct).length;
-    const score = Math.round((correctCount / (checkpoints.length || 1)) * 100);
+    const passed = results.result === "pass";
+    const correctCount = results.correct_count ?? 0;
+    const totalCount = results.total_count ?? 1;
+    const score = Math.round((results.score ?? 0) * 100);
     const xpEarned = correctCount * 30 + (passed ? 50 : 0);
+    const feedbackList = results.feedback ?? [];
 
     return (
       <main className="max-w-2xl mx-auto px-6 py-10">
@@ -342,7 +332,7 @@ export default function DiagnosePage() {
             </div>
             <div className="w-px bg-gray-200" />
             <div className="text-center">
-              <p className="text-2xl font-extrabold text-text-primary">{correctCount}/{checkpoints.length}</p>
+              <p className="text-2xl font-extrabold text-text-primary">{correctCount}/{totalCount}</p>
               <p className="text-[11px] text-text-muted">Correct</p>
             </div>
             <div className="w-px bg-gray-200" />
@@ -353,30 +343,27 @@ export default function DiagnosePage() {
           </div>
         </div>
 
-        {/* Checkpoint breakdown */}
-        {checkpoints.length > 0 && (
+        {/* Question-by-question feedback */}
+        {feedbackList.length > 0 && (
           <div className="rounded-2xl border border-gray-200 bg-white p-6 mb-5">
             <h3 className="font-bold text-sm text-text-primary mb-4 flex items-center gap-2">
-              <span>📋</span> Checkpoint Results
+              <span>📋</span> Question Results
             </h3>
             <div className="flex flex-col gap-2.5">
-              {checkpoints.map((r, i) => (
-                <div key={r.checkpoint_id ?? i} className={`flex items-center gap-3 rounded-xl p-3 ${
-                  r.correct ? "bg-emerald-50" : "bg-red-50"
+              {feedbackList.map((f, i) => (
+                <div key={f.question_id ?? i} className={`flex items-center gap-3 rounded-xl p-3 ${
+                  f.is_correct ? "bg-emerald-50" : "bg-red-50"
                 }`}>
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                    r.correct ? "bg-emerald-400 text-white" : "bg-red-400 text-white"
+                    f.is_correct ? "bg-emerald-400 text-white" : "bg-red-400 text-white"
                   }`}>
-                    {r.correct ? "✓" : "✗"}
+                    {f.is_correct ? "✓" : "✗"}
                   </div>
-                  <span className="text-sm text-text-primary font-medium">Step {i + 1}</span>
-                  {!r.correct && r.mapped_prereq && (
-                    <span className="ml-auto text-[11px] bg-amber-100 text-amber-700 border border-amber-200 rounded-full px-2.5 py-0.5 font-semibold">
-                      Review: {PREREQ_LABELS[r.mapped_prereq] ?? r.mapped_prereq}
-                    </span>
-                  )}
-                  {r.correct && (
-                    <span className="ml-auto text-[11px] text-emerald-600 font-semibold">+30 XP</span>
+                  <span className="text-sm text-text-primary font-medium flex-1">
+                    {f.feedback}
+                  </span>
+                  {f.is_correct && (
+                    <span className="text-[11px] text-emerald-600 font-semibold">+30 XP</span>
                   )}
                 </div>
               ))}
@@ -384,20 +371,24 @@ export default function DiagnosePage() {
           </div>
         )}
 
-        {/* Prerequisite bridge */}
-        {prereqs.length > 0 && (
-          <div className="rounded-2xl border border-amber-200 bg-amber-brand/5 p-6 mb-5">
-            <h3 className="font-bold text-sm text-amber-700 mb-3 flex items-center gap-2">
-              <span>🗺️</span> Prerequisite Bridge
+        {/* Concept status */}
+        {results.concept_status && (
+          <div className={`rounded-2xl border p-5 mb-5 ${
+            results.concept_status === "mastered"
+              ? "border-emerald-200 bg-emerald-50"
+              : "border-amber-200 bg-amber-brand/5"
+          }`}>
+            <h3 className={`font-bold text-sm mb-2 flex items-center gap-2 ${
+              results.concept_status === "mastered" ? "text-emerald-700" : "text-amber-700"
+            }`}>
+              <span>{results.concept_status === "mastered" ? "🏅" : "🗺️"}</span>
+              {results.concept_status === "mastered" ? "Concept Mastered!" : "Keep Practicing"}
             </h3>
-            <p className="text-text-secondary text-xs mb-4">Study these topics first, then re-attempt the mission.</p>
-            <div className="flex flex-wrap gap-2">
-              {prereqs.map((p) => (
-                <span key={p} className="rounded-xl border border-amber-300 bg-amber-100 text-amber-800 text-sm px-3.5 py-1.5 font-semibold">
-                  {PREREQ_LABELS[p] ?? p}
-                </span>
-              ))}
-            </div>
+            <p className="text-text-secondary text-xs">
+              {results.concept_status === "mastered"
+                ? "Great work! This concept is now marked as mastered in your progress."
+                : "Review the resources below and try again to master this concept."}
+            </p>
           </div>
         )}
 

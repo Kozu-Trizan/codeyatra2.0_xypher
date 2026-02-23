@@ -11,6 +11,10 @@ import AccountPage from "./pages/AccountPage";
 import DiagnosePage from "./pages/DiagnosePage";
 import PathfinderPage from "./pages/PathfinderPage";
 import ProgressPage from "./pages/ProgressPage";
+import SimulationsPage from "./pages/SimulationsPage";
+import VectorDecomposition from "./components/simulations/physics/VectorDecomposition";
+import FunctionGraphing from "./components/simulations/mathematics/FunctionGraphing";
+import MolecularStructure from "./components/simulations/chemistry/MolecularStructure";
 
 export default function App() {
   return (
@@ -68,6 +72,38 @@ export default function App() {
                       element={
                         <ProtectedRoute>
                           <AccountPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/simulations"
+                      element={
+                        <ProtectedRoute>
+                          <SimulationsPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/simulations/physics/:conceptId"
+                      element={
+                        <ProtectedRoute>
+                          <VectorDecomposition />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/simulations/math/:conceptId"
+                      element={
+                        <ProtectedRoute>
+                          <FunctionGraphing />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/simulations/chemistry/:conceptId"
+                      element={
+                        <ProtectedRoute>
+                          <MolecularStructure />
                         </ProtectedRoute>
                       }
                     />

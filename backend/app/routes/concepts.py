@@ -36,6 +36,11 @@ def list_concepts():
     if diff_max is not None:
         query = query.filter(Concept.difficulty <= diff_max)
 
+    # Filter to syllabus-only concepts (hide foundational/hidden ones)
+    syllabus_only = request.args.get("syllabus_only", "false").lower() == "true"
+    if syllabus_only:
+        query = query.filter(Concept.is_syllabus == True)
+
     concepts = query.order_by(Concept.difficulty).all()
     include_prereqs = request.args.get("include_prerequisites", "false").lower() == "true"
 

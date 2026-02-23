@@ -17,6 +17,14 @@ const DIFFICULTY_BADGES = {
   hard:   { emoji: "🔴", label: "Master",   color: "bg-rose-100 text-rose-700 border-rose-200" },
 };
 
+/* Map integer difficulty (1-5) to badge key */
+function difficultyKey(d) {
+  if (typeof d === "string") return d;
+  if (d <= 2) return "easy";
+  if (d <= 3) return "medium";
+  return "hard";
+}
+
 export default function QuestionsPage() {
   const { authFetch } = useAuth();
   const [concepts, setConcepts] = useState([]);
@@ -27,7 +35,7 @@ export default function QuestionsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    authFetch("/api/concepts")
+    authFetch("/api/concepts?syllabus_only=true&include_prerequisites=true")
       .then((res) => {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         return res.json();
@@ -41,7 +49,7 @@ export default function QuestionsPage() {
   }, []);
 
   const filtered = concepts
-    .filter((c) => filter === "all" || String(c.class) === filter)
+    .filter((c) => filter === "all" || String(c.neb_class) === filter)
     .filter((c) => !search || c.name?.toLowerCase().includes(search.toLowerCase()));
 
   if (loading) {
@@ -172,7 +180,7 @@ export default function QuestionsPage() {
 }
 
 function MissionCard({ concept, index, onDiagnose, onPath }) {
-  const diff = DIFFICULTY_BADGES[concept.difficulty] || DIFFICULTY_BADGES.medium;
+  const diff = DIFFICULTY_BADGES[difficultyKey(concept.difficulty)] || DIFFICULTY_BADGES.medium;
   const prereqCount = concept.prerequisites?.length || 0;
 
   return (
@@ -187,8 +195,8 @@ function MissionCard({ concept, index, onDiagnose, onPath }) {
             <h3 className="font-bold text-text-primary leading-snug text-sm group-hover:text-amber-700 transition-colors">
               {concept.name}
             </h3>
-            {concept.class && (
-              <span className="text-[11px] text-text-muted">Class {concept.class}</span>
+            {concept.neb_class && (
+              <span className="text-[11px] text-text-muted">Class {concept.neb_class}</span>
             )}
           </div>
         </div>

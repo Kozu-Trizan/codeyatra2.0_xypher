@@ -7,32 +7,58 @@ Implements:
   - Backtrack decision logic (spec §6.3)
 """
 
+import re
 from app.models import db, ErrorPattern, Checkpoint, StudentProgress, Concept
+
+
+def _parse_numeric(val):
+    """Try to extract a float from a string value. Returns None if not numeric."""
+    if isinstance(val, (int, float)):
+        return float(val)
+    if isinstance(val, str):
+        val = val.strip()
+        m = re.match(r'^[-+]?\d*\.?\d+', val)
+        if m:
+            return float(m.group())
+    return None
+
+
+def _answers_match(student_answer: str, correct_answer: str, tolerance: float = 0.01) -> bool:
+    """Compare two answers: tries numeric first, falls back to case-insensitive string."""
+    s_num = _parse_numeric(student_answer)
+    c_num = _parse_numeric(correct_answer)
+    if s_num is not None and c_num is not None:
+        return abs(s_num - c_num) <= tolerance
+    # String comparison (case-insensitive, stripped)
+    return str(student_answer).strip().lower() == str(correct_answer).strip().lower()
 
 
 # ---------------------------------------------------------------------------
 # 6.1 Error Pattern Matching
 # ---------------------------------------------------------------------------
 
-def match_error_pattern(checkpoint_id: int, student_answer: float) -> ErrorPattern | None:
+def match_error_pattern(checkpoint_id: int, student_answer: str) -> ErrorPattern | None:
     """
-    Find the highest-confidence ErrorPattern whose trigger_value is within
-    tolerance of the student's answer.
-
-    Returns None when no pattern matches (caller should use generic hint).
+    Find the highest-confidence ErrorPattern whose trigger_value matches
+    the student's answer (string or numeric comparison).
     """
     patterns = ErrorPattern.query.filter_by(checkpoint_id=checkpoint_id).all()
 
     matches = []
     for p in patterns:
-        distance = abs(student_answer - p.trigger_value)
-        if distance <= p.trigger_tolerance:
-            matches.append(p)
+        s_num = _parse_numeric(student_answer)
+        t_num = _parse_numeric(p.trigger_value)
+        if s_num is not None and t_num is not None:
+            if abs(s_num - t_num) <= p.trigger_tolerance:
+                matches.append(p)
+        else:
+            # String comparison
+            if str(student_answer).strip().lower() == str(p.trigger_value).strip().lower():
+                matches.append(p)
 
     if not matches:
         return None
 
-    # Highest confidence first
     matches.sort(key=lambda p: p.confidence, reverse=True)
     return matches[0]
 
@@ -148,18 +174,15 @@ def get_backtrack_path(student_id: int, missing_concept_id: int) -> list[dict]:
 
 def evaluate_checkpoint_answer(
     checkpoint: Checkpoint,
-    student_answer: float,
+    student_answer: str,
     attempt_number: int,
     student_id: int,
 ) -> dict:
     """
     Evaluate a student's answer at a checkpoint and return the full response payload.
-
-    Returns dict with keys: correct, feedback, backtrack, error_type,
-    missing_concept, hint, next_action, confidence, behavioral_flags.
+    Accepts string-based answers for both numeric and MCQ checkpoints.
     """
-    # Check correctness
-    is_correct = abs(student_answer - checkpoint.correct_answer) <= checkpoint.tolerance
+    is_correct = _answers_match(student_answer, checkpoint.correct_answer, checkpoint.tolerance)
 
     if is_correct:
         return {
