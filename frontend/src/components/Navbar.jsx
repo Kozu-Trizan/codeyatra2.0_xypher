@@ -42,6 +42,7 @@ export default function Navbar() {
         {navLink("/pathfinder", "Learning Path")}
         {navLink("/questions", "Missions")}
         {navLink("/diagnose", "Diagnose")}
+        {navLink("/simulations", "Simulations")}
         {navLink("/progress", "Progress")}
 
         {user ? (
