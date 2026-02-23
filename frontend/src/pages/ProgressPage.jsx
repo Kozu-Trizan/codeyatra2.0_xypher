@@ -12,12 +12,26 @@ const PREREQ_LABELS = {
 };
 
 const STATUS_META = {
-  passed: {
+  mastered: {
     label: "Mastered",
     color: "text-emerald-700",
     bg: "bg-emerald-50 border-emerald-200",
     dot: "bg-emerald-400",
     xp: 100,
+  },
+  passed: {  // legacy alias
+    label: "Mastered",
+    color: "text-emerald-700",
+    bg: "bg-emerald-50 border-emerald-200",
+    dot: "bg-emerald-400",
+    xp: 100,
+  },
+  in_progress: {
+    label: "In Progress",
+    color: "text-blue-700",
+    bg: "bg-blue-50 border-blue-200",
+    dot: "bg-blue-400",
+    xp: 0,
   },
   needs_review: {
     label: "Needs Review",
@@ -62,7 +76,7 @@ export default function ProgressPage() {
     if (!user?.id) return;
     Promise.all([
       authFetch(`/api/progress/${user.id}`).then((r) => r.ok ? r.json() : null),
-      authFetch("/api/concepts").then((r) => r.ok ? r.json() : []),
+      authFetch("/api/concepts?syllabus_only=true").then((r) => r.ok ? r.json() : []),
     ])
       .then(([prog, concs]) => {
         setProgressData(prog?.data ?? prog);
@@ -98,25 +112,24 @@ export default function ProgressPage() {
     );
   }
 
-  const raw = progressData?.progress || {};
+  const conceptsProgress = progressData?.concepts ?? [];
   const statusMap = {};
-  Object.entries(raw).forEach(([conceptId, entry]) => {
-    statusMap[conceptId] = entry.status || "not_started";
+  conceptsProgress.forEach((entry) => {
+    statusMap[entry.id] = { status: entry.status || "not_started", masteredAt: entry.mastered_at };
   });
 
   const rows = concepts.map((c) => ({
     ...c,
-    status: statusMap[c.id] || "not_started",
-    diagnosedAt: raw[c.id]?.diagnosed_at || null,
+    status: statusMap[c.id]?.status || "not_started",
+    masteredAt: statusMap[c.id]?.masteredAt || null,
   }));
 
-  const passed = rows.filter((r) => r.status === "passed").length;
+  const passed = rows.filter((r) => r.status === "mastered").length;
   const reviewed = rows.filter((r) => r.status === "needs_review").length;
   const notStarted = rows.length - passed - reviewed;
   const totalXp = passed * 100 + reviewed * 30;
   const levelInfo = getLevel(totalXp);
 
-  /* Achievements */
   const achievements = [];
   if (passed >= 1) achievements.push({ label: "First Mastery", desc: "Mastered your first concept" });
   if (passed >= 3) achievements.push({ label: "On a Roll", desc: "Mastered 3 concepts" });
@@ -221,13 +234,13 @@ export default function ProgressPage() {
           return (
             <div key={row.id}
               className={`rounded-2xl border bg-white p-4 flex items-center gap-4 transition-all hover:shadow-sm ${
-                row.status === "passed" ? "border-emerald-200" : "border-gray-200"
+                row.status === "mastered" ? "border-emerald-200" : "border-gray-200"
               }`}>
               {/* Status icon */}
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                row.status === "passed" ? "bg-emerald-100" : row.status === "needs_review" ? "bg-amber-100" : "bg-gray-100"
+                row.status === "mastered" ? "bg-emerald-100" : row.status === "needs_review" ? "bg-amber-100" : "bg-gray-100"
               }`}>
-                {row.status === "passed" ? (
+                {row.status === "mastered" ? (
                   <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                 ) : row.status === "needs_review" ? (
                   <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
@@ -240,8 +253,8 @@ export default function ProgressPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-text-primary text-sm truncate">{row.name}</p>
                 <p className="text-[11px] text-text-muted mt-0.5">
-                  {row.class ? `Class ${row.class}` : ""}
-                  {row.diagnosedAt ? ` · Diagnosed ${new Date(row.diagnosedAt).toLocaleDateString()}` : ""}
+                  {row.neb_class ? `Class ${row.neb_class}` : ""}
+                  {row.masteredAt ? ` · Mastered ${new Date(row.masteredAt).toLocaleDateString()}` : ""}
                 </p>
               </div>
 
@@ -256,7 +269,7 @@ export default function ProgressPage() {
               </span>
 
               {/* Action */}
-              {row.status !== "passed" && (
+              {row.status !== "mastered" && (
                 <button onClick={() => navigate("/diagnose")}
                   className="shrink-0 text-[11px] px-3 py-1.5 rounded-lg bg-amber-brand hover:bg-amber-hover text-white font-bold transition-all active:scale-95">
                   Diagnose
