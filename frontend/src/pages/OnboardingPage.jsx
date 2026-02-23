@@ -8,10 +8,10 @@ const CLASSES = [
 ];
 
 const SUBJECTS = [
-  { value: "physics", label: "Physics", icon: "⚛️", available: true },
-  { value: "chemistry", label: "Chemistry", icon: "🧪", available: false },
-  { value: "maths", label: "Mathematics", icon: "📐", available: false },
-  { value: "biology", label: "Biology", icon: "🧬", available: false },
+  { value: "physics", label: "Physics", abbr: "Ph", available: true },
+  { value: "chemistry", label: "Chemistry", abbr: "Ch", available: false },
+  { value: "maths", label: "Mathematics", abbr: "Mx", available: false },
+  { value: "biology", label: "Biology", abbr: "Bi", available: false },
 ];
 
 export default function OnboardingPage() {
@@ -50,7 +50,9 @@ export default function OnboardingPage() {
         {step === 1 && (
           <div className="animate-fade-in">
             <div className="text-center mb-10">
-              <div className="text-4xl mb-4">🎓</div>
+              <div className="w-14 h-14 rounded-2xl bg-amber-brand/15 text-amber-brand flex items-center justify-center mx-auto mb-4">
+                <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
               <h1 className="text-3xl font-extrabold text-text-primary mb-2">
                 Which class are you in?
               </h1>
@@ -98,7 +100,9 @@ export default function OnboardingPage() {
         {step === 2 && (
           <div className="animate-fade-in">
             <div className="text-center mb-10">
-              <div className="text-4xl mb-4">📚</div>
+              <div className="w-14 h-14 rounded-2xl bg-amber-brand/15 text-amber-brand flex items-center justify-center mx-auto mb-4">
+                <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+              </div>
               <h1 className="text-3xl font-extrabold text-text-primary mb-2">
                 Choose your subject
               </h1>
@@ -126,7 +130,7 @@ export default function OnboardingPage() {
                       Soon
                     </span>
                   )}
-                  <div className="text-2xl mb-2">{s.icon}</div>
+                  <div className="w-9 h-9 rounded-lg bg-amber-brand/10 text-amber-700 flex items-center justify-center text-sm font-bold mb-2">{s.abbr}</div>
                   <div className="font-semibold text-text-primary text-sm">
                     {s.label}
                   </div>

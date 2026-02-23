@@ -107,8 +107,8 @@ export function AuthProvider({ children }) {
   }
 
   /** Update profile from account settings */
-  function updateProfile({ studentClass, subject }) {
-    setUser((prev) => ({ ...prev, class: studentClass, subject }));
+  function updateProfile(updates) {
+    setUser((prev) => ({ ...prev, ...updates }));
   }
 
   function logout() {

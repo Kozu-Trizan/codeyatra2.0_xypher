@@ -59,9 +59,13 @@ export default function PathfinderPage() {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-10">
-      {/* Header with mascot */}
+      {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <span className="text-4xl">🐥</span>
+        <div className="w-11 h-11 rounded-xl bg-amber-brand/10 text-amber-brand flex items-center justify-center">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+          </svg>
+        </div>
         <div>
           <h2 className="text-2xl font-extrabold text-text-primary tracking-tight">
             Learning Roadmap
@@ -104,7 +108,7 @@ export default function PathfinderPage() {
             >
               <option value="">— Select a concept —</option>
               {concepts.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}{c.neb_class ? ` (Class ${c.neb_class})` : ""}</option>
+                <option key={c.id} value={c.id}>{c.name}{c.class ? ` (Class ${c.class})` : ""}</option>
               ))}
             </select>
             <button
@@ -115,9 +119,9 @@ export default function PathfinderPage() {
               {loadingPath ? (
                 <span className="flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/60 border-t-white rounded-full animate-spin" />
-                  Finding…
+                  Finding...
                 </span>
-              ) : "Explore Path 🚀"}
+              ) : "Explore Path"}
             </button>
           </div>
         )}
@@ -126,7 +130,8 @@ export default function PathfinderPage() {
       {/* Error */}
       {error && (
         <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-600 text-sm flex items-center gap-2">
-          <span>⚠</span> {error}
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+          {error}
         </div>
       )}
 
@@ -149,8 +154,8 @@ export default function PathfinderPage() {
 /* ───────────────────── Roadmap Visualization ───────────────────── */
 
 function RoadmapTree({ path, onDiagnose }) {
-  const prereqs = path.prerequisite_chain || path.path || [];
-  const target = path.concept ?? { id: path.concept_id, name: path.concept_name };
+  const prereqs = path.path || [];
+  const target = path.concept;
 
   /* Group nodes into tiers (reversed: foundation at bottom) */
   const tiers = [];
@@ -171,7 +176,9 @@ function RoadmapTree({ path, onDiagnose }) {
     <div className="flex flex-col items-center gap-0">
       {/* XP banner */}
       <div className="w-full rounded-xl bg-gradient-to-r from-amber-brand/10 via-cream-100 to-amber-brand/10 border border-amber-200 px-5 py-3.5 mb-8 flex items-center gap-3">
-        <span className="text-xl">🗺️</span>
+        <div className="w-9 h-9 rounded-lg bg-amber-brand/20 text-amber-700 flex items-center justify-center flex-shrink-0">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" /></svg>
+        </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-text-primary">
             {prereqs.length} prerequisite{prereqs.length !== 1 ? "s" : ""} to master{" "}
@@ -219,10 +226,16 @@ function RoadmapTree({ path, onDiagnose }) {
                   >
                     {/* Status badge */}
                     <div className="flex items-start justify-between mb-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                         isTarget ? "bg-amber-brand/20" : isFoundation ? "bg-emerald-100" : "bg-gray-100"
                       }`}>
-                        {isTarget ? "🏔️" : isFoundation ? "🌱" : "🔒"}
+                        {isTarget ? (
+                          <svg className="w-5 h-5 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3l1.664 9.136M3 3h18M3 3L1.5 1.5M21 3l-1.664 9.136M21 3l1.5-1.5M9 12h6m-3-3v6m-6.336 2.864A9 9 0 1020.336 14.864" /></svg>
+                        ) : isFoundation ? (
+                          <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>
+                        ) : (
+                          <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                        )}
                       </div>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         isTarget
@@ -231,7 +244,7 @@ function RoadmapTree({ path, onDiagnose }) {
                             ? "bg-emerald-100 text-emerald-700"
                             : "bg-gray-100 text-gray-500"
                       }`}>
-                        {isTarget ? "🎯 Target" : isFoundation ? "Ready" : "Locked"}
+                        {isTarget ? "Target" : isFoundation ? "Foundation" : "Locked"}
                       </span>
                     </div>
 
@@ -247,7 +260,7 @@ function RoadmapTree({ path, onDiagnose }) {
 
                     {/* XP reward */}
                     <div className="mt-3 flex items-center gap-1.5">
-                      <span className="text-amber-brand text-xs">⭐</span>
+                      <svg className="w-3.5 h-3.5 text-amber-brand" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                       <span className="text-[11px] font-semibold text-text-muted">+50 XP on mastery</span>
                     </div>
                   </div>
@@ -271,7 +284,7 @@ function RoadmapTree({ path, onDiagnose }) {
 
       {/* How to read callout */}
       <div className="w-full mt-6 rounded-2xl bg-cream-100 border border-cream-300 p-5">
-        <h4 className="font-bold text-sm text-text-primary mb-2">📖 How to read this roadmap</h4>
+        <h4 className="font-bold text-sm text-text-primary mb-2">How to read this roadmap</h4>
         <p className="text-xs text-text-secondary leading-relaxed">
           Start from the <span className="font-semibold">Foundation</span> layer at the bottom and work your way up.
           Each concept must be mastered before unlocking dependent concepts above it.
@@ -282,7 +295,11 @@ function RoadmapTree({ path, onDiagnose }) {
 
       {/* CTA */}
       <div className="mt-6 w-full rounded-2xl bg-gradient-to-br from-amber-brand/10 via-cream-100 to-amber-brand/5 border border-amber-200 p-6 text-center">
-        <span className="text-3xl mb-2 block">🧪</span>
+        <div className="w-12 h-12 rounded-xl bg-amber-brand/20 text-amber-700 flex items-center justify-center mx-auto mb-3">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+          </svg>
+        </div>
         <p className="text-text-primary font-bold text-lg mb-1">
           Ready to find your gaps?
         </p>
@@ -293,7 +310,7 @@ function RoadmapTree({ path, onDiagnose }) {
           onClick={onDiagnose}
           className="px-8 py-3 rounded-xl bg-amber-brand hover:bg-amber-hover font-bold text-sm transition-all active:scale-95 shadow-sm shadow-amber-brand/20"
         >
-          🎯 Start Diagnostic Mission
+          Start Diagnostic
         </button>
       </div>
     </div>
