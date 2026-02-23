@@ -27,7 +27,7 @@ export default function QuestionsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    authFetch("/api/concepts")
+      authFetch("/api/concepts?syllabus_only=true&include_prerequisites=true")
       .then((res) => {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         return res.json();
@@ -41,7 +41,7 @@ export default function QuestionsPage() {
   }, []);
 
   const filtered = concepts
-    .filter((c) => filter === "all" || String(c.class) === filter)
+    .filter((c) => filter === "all" || String(c.neb_class) === filter)
     .filter((c) => !search || c.name?.toLowerCase().includes(search.toLowerCase()));
 
   if (loading) {
@@ -147,6 +147,7 @@ export default function QuestionsPage() {
               key={concept.id}
               concept={concept}
               index={i}
+              onSolve={() => navigate(`/learn/${concept.id}`)}
               onDiagnose={() => navigate("/diagnose")}
               onPath={() => navigate("/pathfinder")}
             />
@@ -176,7 +177,7 @@ export default function QuestionsPage() {
   );
 }
 
-function MissionCard({ concept, index, onDiagnose, onPath }) {
+function MissionCard({ concept, index, onSolve, onDiagnose, onPath }) {
   const diff = DIFFICULTY_BADGES[concept.difficulty] || DIFFICULTY_BADGES.medium;
   const prereqCount = concept.prerequisites?.length || 0;
 
@@ -192,8 +193,8 @@ function MissionCard({ concept, index, onDiagnose, onPath }) {
             <h3 className="font-bold text-text-primary leading-snug text-sm group-hover:text-amber-700 transition-colors">
               {concept.name}
             </h3>
-            {concept.class && (
-              <span className="text-[11px] text-text-muted">Class {concept.class}</span>
+            {concept.neb_class && (
+              <span className="text-[11px] text-text-muted">Class {concept.neb_class}</span>
             )}
           </div>
         </div>
@@ -211,8 +212,8 @@ function MissionCard({ concept, index, onDiagnose, onPath }) {
       {prereqCount > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {concept.prerequisites.map((p) => (
-            <span key={p} className="text-[10px] px-2 py-0.5 rounded-full bg-cream-200 border border-cream-300 text-text-secondary font-medium">
-              {PREREQ_LABELS[p] || p}
+            <span key={p.id ?? p} className="text-[10px] px-2 py-0.5 rounded-full bg-cream-200 border border-cream-300 text-text-secondary font-medium">
+              {p.name ?? PREREQ_LABELS[p] ?? p}
             </span>
           ))}
         </div>
@@ -238,9 +239,15 @@ function MissionCard({ concept, index, onDiagnose, onPath }) {
           </button>
           <button
             onClick={onDiagnose}
-            className="text-[11px] px-3 py-1.5 rounded-lg bg-amber-brand hover:bg-amber-hover text-white font-bold transition-all active:scale-95"
+            className="text-[11px] px-3 py-1.5 rounded-lg border border-gray-200 hover:border-amber-brand/40 text-text-secondary hover:text-amber-700 font-semibold transition-all"
           >
             Diagnose
+          </button>
+          <button
+            onClick={onSolve}
+            className="text-[11px] px-3 py-1.5 rounded-lg bg-amber-brand hover:bg-amber-hover text-white font-bold transition-all active:scale-95"
+          >
+            Solve
           </button>
         </div>
       </div>
