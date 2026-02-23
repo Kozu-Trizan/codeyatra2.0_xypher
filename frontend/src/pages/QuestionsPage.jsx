@@ -211,8 +211,8 @@ function MissionCard({ concept, index, onDiagnose, onPath }) {
       {prereqCount > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {concept.prerequisites.map((p) => (
-            <span key={p} className="text-[10px] px-2 py-0.5 rounded-full bg-cream-200 border border-cream-300 text-text-secondary font-medium">
-              {PREREQ_LABELS[p] || p}
+            <span key={p.id ?? p} className="text-[10px] px-2 py-0.5 rounded-full bg-cream-200 border border-cream-300 text-text-secondary font-medium">
+              {p.name ?? PREREQ_LABELS[p] ?? p}
             </span>
           ))}
         </div>

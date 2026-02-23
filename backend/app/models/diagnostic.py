@@ -11,6 +11,7 @@ DiagnosticSession  : One diagnostic attempt by a student for a concept (groups a
 DiagnosticAnswer   : The student's response to a single diagnostic question within a session.
 """
 
+import json
 from app.models import db
 from datetime import datetime, timezone
 
@@ -33,7 +34,8 @@ class DiagnosticQuestion(db.Model):
     )
 
     question_text = db.Column(db.Text, nullable=False)
-    expected_answer = db.Column(db.Text, nullable=True)  # reference / rubric answer
+    expected_answer = db.Column(db.Text, nullable=True)  # reference / rubric answer, or correct choice id for MCQ
+    choices_json = db.Column(db.Text, nullable=True)  # JSON array of {id, text} objects for MCQ
     source = db.Column(db.String(32), default="ai_generated", nullable=False)
     difficulty = db.Column(db.Integer, default=2, nullable=False)  # 1-5
 
@@ -51,12 +53,19 @@ class DiagnosticQuestion(db.Model):
         return f"<DiagnosticQ {self.id} concept={self.concept_id}>"
 
     def to_dict(self):
+        choices = []
+        if self.choices_json:
+            try:
+                choices = json.loads(self.choices_json)
+            except (ValueError, TypeError):
+                choices = []
         return {
             "id": self.id,
             "concept_id": self.concept_id,
             "question_text": self.question_text,
             "difficulty": self.difficulty,
             "source": self.source,
+            "choices": choices,
         }
 
 
