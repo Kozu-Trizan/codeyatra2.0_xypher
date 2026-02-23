@@ -6,10 +6,12 @@ POST /api/diagnose/evaluate -- evaluate answers and update mastery
 """
 
 from datetime import datetime, timezone
-
 from flask import Blueprint, request
-from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity,
+    verify_jwt_in_request,
+)
 from app.models import (
     db,
     Concept,
@@ -22,8 +24,8 @@ from app.utils.response import success_response, error_response
 
 diagnose_bp = Blueprint("diagnose", __name__)
 
-
-@diagnose_bp.post("")
+@diagnose_bp.post("/")
+@jwt_required()
 def start_diagnostic():
     data = request.get_json(silent=True) or {}
 
@@ -80,6 +82,7 @@ def start_diagnostic():
 
 
 @diagnose_bp.post("/evaluate")
+@jwt_required()
 def evaluate_diagnostic():
     data = request.get_json(silent=True) or {}
 
