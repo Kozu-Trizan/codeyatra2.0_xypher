@@ -7,11 +7,7 @@ GET  /api/auth/me          (JWT-protected)
 """
 
 from flask import Blueprint, request
-from flask_jwt_extended import (
-    create_access_token,
-    jwt_required,
-    get_jwt_identity,
-)
+from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.models import db, Student
@@ -19,16 +15,14 @@ from app.utils.response import success_response, error_response
 
 auth_bp = Blueprint("auth", __name__)
 
-
-@auth_bp.route("/register", methods=["POST"])
-def register():
+@auth_bp.post("/register")
+def handle_register():
     data = request.get_json(silent=True) or {}
 
     name = data.get("name", "").strip()
     email = data.get("email", "").strip().lower()
     password = data.get("password", "")
 
-    # --- validation ---
     errors = {}
     if not name:
         errors["name"] = "Name is required."
@@ -38,7 +32,6 @@ def register():
         errors["password"] = "Password must be at least 6 characters."
     if errors:
         return error_response("VALIDATION_ERROR", "Invalid input parameters.", errors, 400)
-
     if Student.query.filter_by(email=email).first():
         return error_response("CONFLICT", "Email already registered.", {"email": email}, 409)
 
@@ -52,8 +45,7 @@ def register():
 
     token = create_access_token(identity=str(student.id))
 
-    return success_response(
-        {
+    return success_response({
             "student": student.to_dict(),
             "access_token": token,
         },
@@ -61,8 +53,8 @@ def register():
     )
 
 
-@auth_bp.route("/login", methods=["POST"])
-def login():
+@auth_bp.post("/login")
+def handle_login():
     data = request.get_json(silent=True) or {}
 
     email = data.get("email", "").strip().lower()
@@ -81,13 +73,3 @@ def login():
         "student": student.to_dict(),
         "access_token": token,
     })
-
-
-@auth_bp.route("/me", methods=["GET"])
-@jwt_required()
-def me():
-    student_id = int(get_jwt_identity())
-    student = Student.query.get(student_id)
-    if student is None:
-        return error_response("NOT_FOUND", "Student not found.", {}, 404)
-    return success_response({"student": student.to_dict()})

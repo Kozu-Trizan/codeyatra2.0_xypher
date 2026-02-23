@@ -12,8 +12,7 @@ from app.utils.response import success_response, error_response
 
 problems_bp = Blueprint("problems", __name__)
 
-
-@problems_bp.route("", methods=["GET"])
+@problems_bp.get("/")
 def list_problems():
     query = Problem.query
 
@@ -36,7 +35,7 @@ def list_problems():
     return success_response({"problems": data})
 
 
-@problems_bp.route("/<int:problem_id>", methods=["GET"])
+@problems_bp.route("/<int:problem_id>")
 def get_problem(problem_id):
     problem = Problem.query.get(problem_id)
     if problem is None:
@@ -62,7 +61,6 @@ def get_problem(problem_id):
             "choices": [
                 {"id": c.id, "label": c.label, "value": c.value}
                 for c in choices
-                # NOTE: is_correct and correct_answer intentionally OMITTED (security)
             ],
         }
         cp_list.append(cp_dict)
@@ -72,6 +70,5 @@ def get_problem(problem_id):
         "title": problem.title,
         "description": problem.description,
         "concept_id": problem.concept_id,
-        "difficulty": problem.difficulty,
-        "checkpoints": cp_list,
+        "difficulty": problem.difficulty, "checkpoints": cp_list,
     })

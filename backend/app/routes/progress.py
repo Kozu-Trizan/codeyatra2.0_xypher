@@ -15,7 +15,7 @@ from app.utils.response import success_response, error_response
 progress_bp = Blueprint("progress", __name__)
 
 
-@progress_bp.route("/<int:student_id>", methods=["GET"])
+@progress_bp.get("/<int:student_id>")
 def get_progress(student_id):
     student = Student.query.get(student_id)
     if student is None:
@@ -52,7 +52,7 @@ def get_progress(student_id):
     })
 
 
-@progress_bp.route("", methods=["POST"])
+@progress_bp.post("")
 def update_progress():
     data = request.get_json(silent=True) or {}
 

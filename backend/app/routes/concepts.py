@@ -8,14 +8,12 @@ GET /api/concepts/dependency-graph    — react-flow graph
 """
 
 from flask import Blueprint, request
-
 from app.models import Concept
 from app.utils.response import success_response, error_response
 
 concepts_bp = Blueprint("concepts", __name__)
 
-
-@concepts_bp.route("", methods=["GET"])
+@concepts_bp.get("/")
 def list_concepts():
     query = Concept.query
 
@@ -45,7 +43,7 @@ def list_concepts():
     })
 
 
-@concepts_bp.route("/<int:concept_id>", methods=["GET"])
+@concepts_bp.get("/<int:concept_id>")
 def get_concept(concept_id):
     concept = Concept.query.get(concept_id)
     if concept is None:
@@ -53,7 +51,7 @@ def get_concept(concept_id):
     return success_response(concept.to_dict(include_prerequisites=True))
 
 
-@concepts_bp.route("/<int:concept_id>/path", methods=["GET"])
+@concepts_bp.get("/<int:concept_id>/path")
 def get_concept_path(concept_id):
     concept = Concept.query.get(concept_id)
     if concept is None:
@@ -65,7 +63,7 @@ def get_concept_path(concept_id):
         {"id": c.id, "name": c.name, "order": i, "difficulty": c.difficulty}
         for i, c in enumerate(chain)
     ]
-    # Add the concept itself at the end
+
     prerequisite_chain.append({
         "id": concept.id,
         "name": concept.name,
@@ -80,7 +78,7 @@ def get_concept_path(concept_id):
     })
 
 
-@concepts_bp.route("/dependency-graph", methods=["GET"])
+@concepts_bp.get("/dependency-graph")
 def dependency_graph():
     graph = Concept.get_dependency_graph()
     return success_response(graph)

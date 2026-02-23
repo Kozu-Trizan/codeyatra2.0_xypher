@@ -11,7 +11,6 @@ import uuid
 
 from flask import jsonify
 
-
 def success_response(data, status_code=200, meta=None):
     """Return a standardised success JSON response."""
     envelope = {

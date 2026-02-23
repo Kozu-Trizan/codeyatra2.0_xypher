@@ -22,7 +22,7 @@ from app.utils.response import success_response, error_response
 diagnose_bp = Blueprint("diagnose", __name__)
 
 
-@diagnose_bp.route("", methods=["POST"])
+@diagnose_bp.post("/")
 def start_diagnostic():
     data = request.get_json(silent=True) or {}
 
@@ -54,7 +54,6 @@ def start_diagnostic():
             404,
         )
 
-    # Create a diagnostic session
     session = DiagnosticSession(
         student_id=int(student_id),
         concept_id=int(concept_id),
@@ -73,7 +72,7 @@ def start_diagnostic():
     )
 
 
-@diagnose_bp.route("/evaluate", methods=["POST"])
+@diagnose_bp.post("/evaluate")
 def evaluate_diagnostic():
     data = request.get_json(silent=True) or {}
 
@@ -104,23 +103,19 @@ def evaluate_diagnostic():
         if question is None:
             continue
 
-        # Deterministic comparison (case-insensitive, trimmed)
         expected = (question.expected_answer or "").strip()
         is_correct = False
 
-        # Try numeric comparison first
         try:
             expected_num = float(expected)
             student_num = float(student_answer)
             is_correct = abs(expected_num - student_num) < 0.01
         except (ValueError, TypeError):
-            # Fall back to string comparison
             is_correct = student_answer.lower() == expected.lower()
 
         if is_correct:
             correct_count += 1
 
-        # Save answer
         diag_answer = DiagnosticAnswer(
             session_id=session.id,
             question_id=question_id,
@@ -139,7 +134,6 @@ def evaluate_diagnostic():
             ),
         })
 
-    # Calculate score
     score = correct_count / total_count if total_count > 0 else 0.0
     passed = score >= session.pass_threshold
 
@@ -147,7 +141,6 @@ def evaluate_diagnostic():
     session.result = "pass" if passed else "fail"
     session.completed_at = datetime.now(timezone.utc)
 
-    # Update student progress
     now = datetime.now(timezone.utc)
     progress = StudentProgress.query.filter_by(
         student_id=session.student_id,

@@ -13,7 +13,7 @@ from app.utils.response import success_response, error_response
 resources_bp = Blueprint("resources", __name__)
 
 
-@resources_bp.route("/<int:concept_id>", methods=["GET"])
+@resources_bp.get("/<int:concept_id>")
 def get_resources(concept_id):
     concept = Concept.query.get(concept_id)
     if concept is None:
@@ -32,7 +32,7 @@ def get_resources(concept_id):
     })
 
 
-@resources_bp.route("/<int:concept_id>/youtube-embed", methods=["GET"])
+@resources_bp.get("/<int:concept_id>/youtube-embed")
 def youtube_embed(concept_id):
     concept = Concept.query.get(concept_id)
     if concept is None:
