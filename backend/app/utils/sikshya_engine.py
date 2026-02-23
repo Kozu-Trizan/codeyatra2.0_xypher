@@ -230,6 +230,58 @@ _MISCONCEPTION_TAG_MAP = [
 
 
 # ---------------------------------------------------------------------------
+# Human-readable concept flaw labels and descriptions
+# ---------------------------------------------------------------------------
+_CONCEPT_FLAW_LABEL: dict[str, str] = {
+    "trigonometry_vector_decomposition": "Sin/Cos Swap in Vector Decomposition",
+    "angle_misinterpretation": "Wrong Angle Used (Complement Confusion)",
+    "decoupling_horizontal_vertical": "Mixing Horizontal and Vertical Motion",
+    "free_body_forces_signs": "Incorrect Force Direction / Sign Error",
+    "stoichiometry_moles_vs_mass": "Using Mass Instead of Moles",
+    "algebra_calculus_concepts": "Calculus / Power Rule Error",
+    "prereq_unknown": "Unidentified Concept Gap",
+}
+
+_CONCEPT_FLAW_DESC: dict[str, str] = {
+    "trigonometry_vector_decomposition": (
+        "Student swapped sin and cos: used sin for the horizontal component and "
+        "cos for the vertical. Correct decomposition: "
+        "A_x = A·cos(θ) (horizontal, adjacent side), A_y = A·sin(θ) (vertical, opposite side)."
+    ),
+    "angle_misinterpretation": (
+        "Student used the complement of the given angle (e.g., 60° instead of 30°). "
+        "The angle θ in the problem is measured from the horizontal; "
+        "apply cos(θ) for the x-component and sin(θ) for the y-component using that same angle."
+    ),
+    "decoupling_horizontal_vertical": (
+        "Student applied a vertical-motion formula to the horizontal axis or vice versa. "
+        "Horizontal and vertical motions are independent: "
+        "time of flight is determined by vertical velocity (V₀ᵧ), "
+        "and horizontal range uses the constant horizontal velocity (V₀ₓ)."
+    ),
+    "free_body_forces_signs": (
+        "Student assigned the wrong direction (sign) to a force in Newton's second law. "
+        "Choose a consistent positive direction first; tension and gravity components "
+        "must be added or subtracted based on whether they act with or against that direction."
+    ),
+    "stoichiometry_moles_vs_mass": (
+        "Student compared raw masses to determine the limiting reactant instead of moles. "
+        "Convert each reactant to moles using n = mass / molar mass, "
+        "then use stoichiometric ratios to identify which runs out first."
+    ),
+    "algebra_calculus_concepts": (
+        "Student made an error in the power rule or integration rule. "
+        "Differentiation: d/dx(xⁿ) = n·xⁿ⁻¹ (multiply by n, reduce exponent by 1). "
+        "Integration: ∫xⁿ dx = xⁿ⁺¹/(n+1) + C (raise exponent by 1, divide, add constant C)."
+    ),
+    "prereq_unknown": (
+        "The specific prerequisite gap could not be identified from the selected option. "
+        "Review the step explanation and underlying concepts."
+    ),
+}
+
+
+# ---------------------------------------------------------------------------
 # Socratic hint templates keyed by prereq tag
 # ---------------------------------------------------------------------------
 _SOCRATIC_HINTS: dict[str, str] = {
@@ -511,6 +563,8 @@ def run_diagnosis(payload: dict) -> dict:
                 "selectedOptionIndex": sel_idx,
                 "correct": False,
                 "inferredPrereqTag": tag,
+                "conceptFlaw": _CONCEPT_FLAW_LABEL.get(tag, tag),
+                "flawDescription": _CONCEPT_FLAW_DESC.get(tag, ""),
                 "confidence": confidence,
                 "socraticHint": hint,
                 "recommendedResourceIds": res_ids,
@@ -539,6 +593,8 @@ def run_diagnosis(payload: dict) -> dict:
 
         diag_item: dict = {
             "prereqTag": tag,
+            "conceptFlaw": _CONCEPT_FLAW_LABEL.get(tag, tag),
+            "flawDescription": _CONCEPT_FLAW_DESC.get(tag, ""),
             "confidence": confidence_for_tag,
             "mastery": mastery,
             "recommendedResourceIds": res_ids,
