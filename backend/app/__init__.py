@@ -1,5 +1,5 @@
-"""
-SikshyaMap AI — Flask Application Factory.
+﻿"""
+SikshyaMap AI - Flask Application Factory.
 
 Creates and configures the Flask application with all extensions,
 blueprints, and database setup.
@@ -8,34 +8,31 @@ blueprints, and database setup.
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-<<<<<<< HEAD
-from config import Config
+from config import Config, DevelopmentConfig, config as config_map
 
-=======
-import config
-from config import config as config_map
->>>>>>> main
 from app.models import db
 
 
 jwt = JWTManager()
 
 
-<<<<<<< HEAD
-def create_app(config_name=Config):
-=======
-def create_app(config_cls=config.Config):
->>>>>>> main
-    """Application factory — creates and returns a fully configured Flask app."""
+def create_app(config_name=None):
+    """Application factory - creates and returns a fully configured Flask app."""
 
     app = Flask(__name__)
-    app.config.from_object(config_cls)
-    app.url_map.strict_slashes = False
-<<<<<<< HEAD
-    # --- extensions ---
-=======
 
->>>>>>> main
+    # Support both string names and config class objects
+    if config_name is None:
+        cfg = DevelopmentConfig
+    elif isinstance(config_name, str):
+        cfg = config_map.get(config_name, DevelopmentConfig)
+    else:
+        cfg = config_name
+
+    app.config.from_object(cfg)
+    app.url_map.strict_slashes = False
+
+    # --- extensions ---
     db.init_app(app)
     jwt.init_app(app)
     CORS(app)
