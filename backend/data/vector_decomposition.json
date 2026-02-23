@@ -1,0 +1,43 @@
+{
+  "problems": [
+    {
+      "concept_id": "vector_decomposition",
+      "title": "Decomposing a Velocity Vector",
+      "text": "A ball is thrown at 25 m/s at an angle of 40° above the horizontal. Find the horizontal and vertical components of velocity.",
+      "difficulty": "medium",
+      "checkpoints": [
+        {
+          "question": "Horizontal component Vx = v cos(40°). cos(40°) ≈ 0.766. So Vx ≈ ?",
+          "type": "multiple_choice",
+          "unit": "m/s",
+          "hint_on_first_wrong": "Vx = 25 × 0.766 = 19.15 m/s",
+          "choices": [
+            { "value": "19.15 m/s", "is_correct": true },
+            { "value": "16.07 m/s", "is_correct": false },
+            { "value": "25 m/s", "is_correct": false },
+            { "value": "12.5 m/s", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "16.07 m/s", "diagnosis": "You used sin(40°) instead of cos(40°) for the horizontal component.", "missing_concept_id": "trigonometry" },
+            { "wrong_choice": "25 m/s", "diagnosis": "You forgot to decompose. The full velocity is 25 m/s, but the horizontal component requires cos(40°).", "missing_concept_id": "vector_decomposition" }
+          ]
+        },
+        {
+          "question": "Vertical component Vy = v sin(40°). sin(40°) ≈ 0.643. So Vy ≈ ?",
+          "type": "multiple_choice",
+          "unit": "m/s",
+          "hint_on_first_wrong": "Vy = 25 × 0.643 = 16.07 m/s",
+          "choices": [
+            { "value": "16.07 m/s", "is_correct": true },
+            { "value": "19.15 m/s", "is_correct": false },
+            { "value": "25 m/s", "is_correct": false },
+            { "value": "8.04 m/s", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "19.15 m/s", "diagnosis": "You used cos(40°) instead of sin(40°) for the vertical component.", "missing_concept_id": "trigonometry" }
+          ]
+        }
+      ]
+    }
+  ]
+}

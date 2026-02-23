@@ -1,0 +1,93 @@
+{
+  "problems": [
+    {
+      "concept_id": "projectile_motion",
+      "title": "Cannonball Range",
+      "text": "A cannonball is fired at 40 m/s at 45° to the horizontal. Take g = 10 m/s². Find the range.",
+      "difficulty": "medium",
+      "checkpoints": [
+        {
+          "question": "First find the horizontal component: Vx = 40 × cos(45°). cos(45°) ≈ 0.707. Vx ≈ ?",
+          "type": "multiple_choice",
+          "unit": "m/s",
+          "hint_on_first_wrong": "Vx = 40 × 0.707 = 28.28 m/s",
+          "choices": [
+            { "value": "28.28 m/s", "is_correct": true },
+            { "value": "20 m/s", "is_correct": false },
+            { "value": "40 m/s", "is_correct": false },
+            { "value": "14.14 m/s", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "40 m/s", "diagnosis": "You forgot to resolve the velocity. Must multiply by cos(45°).", "missing_concept_id": "vector_decomposition" }
+          ]
+        },
+        {
+          "question": "Vertical component Vy = 40 × sin(45°) ≈ 28.28 m/s. Time of flight T = 2Vy/g = ?",
+          "type": "multiple_choice",
+          "unit": "s",
+          "hint_on_first_wrong": "T = 2 × 28.28 / 10 = 5.66 s",
+          "choices": [
+            { "value": "5.66 s", "is_correct": true },
+            { "value": "2.83 s", "is_correct": false },
+            { "value": "4 s", "is_correct": false },
+            { "value": "8 s", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "2.83 s", "diagnosis": "You forgot to multiply by 2. T = 2Vy/g, not Vy/g. The ball goes up AND comes back down.", "missing_concept_id": "kinematic_equations" }
+          ]
+        },
+        {
+          "question": "Range = Vx × T = 28.28 × 5.66 ≈ ?",
+          "type": "multiple_choice",
+          "unit": "m",
+          "hint_on_first_wrong": "R = 28.28 × 5.66 ≈ 160 m",
+          "choices": [
+            { "value": "160 m", "is_correct": true },
+            { "value": "80 m", "is_correct": false },
+            { "value": "226 m", "is_correct": false },
+            { "value": "113 m", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "80 m", "diagnosis": "You used half the flight time. Range uses full flight time, not just time to peak.", "missing_concept_id": "kinematic_equations" }
+          ]
+        }
+      ]
+    },
+    {
+      "concept_id": "projectile_motion",
+      "title": "Ball Thrown from a Cliff",
+      "text": "A ball is thrown horizontally at 15 m/s from the top of a 45 m cliff. Take g = 10 m/s². How far from the base does it land?",
+      "difficulty": "easy",
+      "checkpoints": [
+        {
+          "question": "Time to fall 45 m: using h = ½gt², solve for t. t = √(2h/g) = √(2×45/10) = ?",
+          "type": "multiple_choice",
+          "unit": "s",
+          "hint_on_first_wrong": "t = √(90/10) = √9 = 3 s",
+          "choices": [
+            { "value": "3 s", "is_correct": true },
+            { "value": "4.5 s", "is_correct": false },
+            { "value": "9 s", "is_correct": false },
+            { "value": "2.12 s", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "4.5 s", "diagnosis": "You used t = h/g directly. The correct formula is h = ½gt², so t = √(2h/g).", "missing_concept_id": "kinematic_equations" }
+          ]
+        },
+        {
+          "question": "Horizontal distance = Vx × t = 15 × 3 = ?",
+          "type": "multiple_choice",
+          "unit": "m",
+          "hint_on_first_wrong": "d = 15 × 3 = 45 m",
+          "choices": [
+            { "value": "45 m", "is_correct": true },
+            { "value": "15 m", "is_correct": false },
+            { "value": "67.5 m", "is_correct": false },
+            { "value": "30 m", "is_correct": false }
+          ],
+          "error_patterns": []
+        }
+      ]
+    }
+  ]
+}

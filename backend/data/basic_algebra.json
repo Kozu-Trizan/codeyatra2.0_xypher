@@ -1,0 +1,66 @@
+{
+  "problems": [
+    {
+      "concept_id": "basic_algebra",
+      "title": "Rearranging the Kinematic Equation",
+      "text": "Given v = u + at, a student needs to find the time t.",
+      "difficulty": "easy",
+      "checkpoints": [
+        {
+          "question": "Rearranging v = u + at for t gives?",
+          "type": "multiple_choice",
+          "unit": "",
+          "hint_on_first_wrong": "Subtract u from both sides: v - u = at. Then divide by a.",
+          "choices": [
+            { "value": "t = (v - u) / a", "is_correct": true },
+            { "value": "t = (v + u) / a", "is_correct": false },
+            { "value": "t = v / (u × a)", "is_correct": false },
+            { "value": "t = a / (v - u)", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "t = (v + u) / a", "diagnosis": "You added u instead of subtracting. First step is v - u = at.", "missing_concept_id": "basic_algebra" },
+            { "wrong_choice": "t = a / (v - u)", "diagnosis": "You inverted the division. From at = v - u, divide both sides by a, not the other way around.", "missing_concept_id": "basic_algebra" }
+          ]
+        }
+      ]
+    },
+    {
+      "concept_id": "basic_algebra",
+      "title": "Solving for Velocity from KE",
+      "text": "Kinetic energy KE = ½mv². If KE = 200 J and m = 4 kg, find v.",
+      "difficulty": "medium",
+      "checkpoints": [
+        {
+          "question": "Rearrange ½mv² = KE for v²:",
+          "type": "multiple_choice",
+          "unit": "",
+          "hint_on_first_wrong": "Multiply both sides by 2: mv² = 2KE. Then divide by m: v² = 2KE/m.",
+          "choices": [
+            { "value": "v² = 2KE / m", "is_correct": true },
+            { "value": "v² = KE / 2m", "is_correct": false },
+            { "value": "v² = KE × m / 2", "is_correct": false },
+            { "value": "v² = KE / m", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "v² = KE / 2m", "diagnosis": "The ½ was in front of mv². Multiply both sides by 2 first to get mv² = 2KE.", "missing_concept_id": "basic_algebra" }
+          ]
+        },
+        {
+          "question": "v = √(2 × 200 / 4) = √(100) = ?",
+          "type": "multiple_choice",
+          "unit": "m/s",
+          "hint_on_first_wrong": "v = √(400/4) = √100 = 10 m/s",
+          "choices": [
+            { "value": "10 m/s", "is_correct": true },
+            { "value": "100 m/s", "is_correct": false },
+            { "value": "5 m/s", "is_correct": false },
+            { "value": "50 m/s", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "100 m/s", "diagnosis": "You forgot to take the square root. v = √(v²), not just v².", "missing_concept_id": "basic_algebra" }
+          ]
+        }
+      ]
+    }
+  ]
+}

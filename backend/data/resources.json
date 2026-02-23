@@ -1,0 +1,112 @@
+{
+  "resources": [
+    {
+      "concept_id": "basic_algebra",
+      "title": "Algebra Basics for Physics - Khan Academy",
+      "youtube_video_id": "NybHckSEQBI",
+      "start_seconds": 0,
+      "end_seconds": 600,
+      "quality_rating": 5,
+      "why_recommended": "Covers rearranging formulas and substitution used throughout physics."
+    },
+    {
+      "concept_id": "trigonometry",
+      "title": "Trigonometry for Physics Students",
+      "youtube_video_id": "yBw67Fb31Cs",
+      "start_seconds": 0,
+      "end_seconds": 720,
+      "quality_rating": 5,
+      "why_recommended": "Sin, cos, tan applied directly to physics problems."
+    },
+    {
+      "concept_id": "newtons_laws",
+      "title": "Newton's Laws of Motion - NEB Physics",
+      "youtube_video_id": "kKKM8Y-u7ds",
+      "start_seconds": 0,
+      "end_seconds": 900,
+      "quality_rating": 5,
+      "why_recommended": "Clear explanation of all three laws with NEB-level examples."
+    },
+    {
+      "concept_id": "vector_decomposition",
+      "title": "Resolving Vectors into Components",
+      "youtube_video_id": "bOIe0DIMbI8",
+      "start_seconds": 30,
+      "end_seconds": 600,
+      "quality_rating": 4,
+      "why_recommended": "Step-by-step breakdown of vector resolution."
+    },
+    {
+      "concept_id": "kinematic_equations",
+      "title": "Equations of Motion Explained",
+      "youtube_video_id": "v5M1eCH7twI",
+      "start_seconds": 0,
+      "end_seconds": 800,
+      "quality_rating": 5,
+      "why_recommended": "The four kinematic equations with worked examples."
+    },
+    {
+      "concept_id": "projectile_motion",
+      "title": "Projectile Motion - Complete Guide",
+      "youtube_video_id": "aY8z2dp_Vp0",
+      "start_seconds": 0,
+      "end_seconds": 900,
+      "quality_rating": 5,
+      "why_recommended": "Full walkthrough of projectile problems from NEB syllabus."
+    },
+    {
+      "concept_id": "work_energy_power",
+      "title": "Work, Energy & Power - Physics",
+      "youtube_video_id": "w4QFJb9a8vo",
+      "start_seconds": 0,
+      "end_seconds": 850,
+      "quality_rating": 4,
+      "why_recommended": "Covers work-energy theorem and conservation of energy."
+    },
+    {
+      "concept_id": "gravitation",
+      "title": "Gravitation - Newton's Law of Universal Gravitation",
+      "youtube_video_id": "Jnoxz2dOaXE",
+      "start_seconds": 0,
+      "end_seconds": 720,
+      "quality_rating": 4,
+      "why_recommended": "Gravitational force, fields and satellite motion."
+    },
+    {
+      "concept_id": "simple_harmonic_motion",
+      "title": "Simple Harmonic Motion Made Easy",
+      "youtube_video_id": "ou9YMm6KxTM",
+      "start_seconds": 0,
+      "end_seconds": 800,
+      "quality_rating": 4,
+      "why_recommended": "Springs, pendulums and the SHM equations."
+    },
+    {
+      "concept_id": "wave_motion",
+      "title": "Wave Motion - Types, Properties & Equations",
+      "youtube_video_id": "TfYCnOvNnFU",
+      "start_seconds": 0,
+      "end_seconds": 700,
+      "quality_rating": 4,
+      "why_recommended": "Transverse vs longitudinal, wave speed equation."
+    },
+    {
+      "concept_id": "current_electricity",
+      "title": "Current Electricity - Ohm's Law & Circuits",
+      "youtube_video_id": "LN8mwm_UbKA",
+      "start_seconds": 0,
+      "end_seconds": 750,
+      "quality_rating": 5,
+      "why_recommended": "Ohm's law, resistors in series/parallel, Kirchhoff's laws."
+    },
+    {
+      "concept_id": "magnetic_fields",
+      "title": "Magnetic Fields and Forces",
+      "youtube_video_id": "s94suB5uLWw",
+      "start_seconds": 0,
+      "end_seconds": 800,
+      "quality_rating": 4,
+      "why_recommended": "Magnetic force on moving charges and current-carrying wires."
+    }
+  ]
+}

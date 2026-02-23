@@ -1,0 +1,95 @@
+{
+  "concepts": [
+    {
+      "id": "basic_algebra",
+      "name": "Basic Algebra",
+      "difficulty": 1,
+      "description": "Rearranging equations, substitution, and solving for unknowns — the foundation for all physics.",
+      "prerequisites": []
+    },
+    {
+      "id": "right_triangles",
+      "name": "Right Triangles",
+      "difficulty": 1,
+      "description": "Properties of right-angled triangles and the Pythagorean theorem.",
+      "prerequisites": ["basic_algebra"]
+    },
+    {
+      "id": "trigonometry",
+      "name": "Trigonometry",
+      "difficulty": 2,
+      "description": "Sine, cosine, tangent and their applications in resolving components.",
+      "prerequisites": ["right_triangles"]
+    },
+    {
+      "id": "newtons_laws",
+      "name": "Newton's Laws of Motion",
+      "difficulty": 2,
+      "description": "The three fundamental laws governing force, mass and acceleration.",
+      "prerequisites": ["basic_algebra"]
+    },
+    {
+      "id": "vector_decomposition",
+      "name": "Vector Decomposition",
+      "difficulty": 3,
+      "description": "Breaking vectors into horizontal and vertical components using trigonometry.",
+      "prerequisites": ["trigonometry"]
+    },
+    {
+      "id": "kinematic_equations",
+      "name": "Kinematic Equations",
+      "difficulty": 2,
+      "description": "The four equations of motion for uniformly accelerated bodies.",
+      "prerequisites": ["basic_algebra"]
+    },
+    {
+      "id": "work_energy_power",
+      "name": "Work, Energy & Power",
+      "difficulty": 3,
+      "description": "Work done by forces, kinetic and potential energy, conservation laws and power.",
+      "prerequisites": ["newtons_laws", "basic_algebra"]
+    },
+    {
+      "id": "projectile_motion",
+      "name": "Projectile Motion",
+      "difficulty": 3,
+      "description": "Analysing the parabolic path of objects launched at an angle under gravity.",
+      "prerequisites": ["vector_decomposition", "kinematic_equations"]
+    },
+    {
+      "id": "gravitation",
+      "name": "Gravitation",
+      "difficulty": 3,
+      "description": "Newton's law of universal gravitation, gravitational field and potential.",
+      "prerequisites": ["newtons_laws", "kinematic_equations"]
+    },
+    {
+      "id": "simple_harmonic_motion",
+      "name": "Simple Harmonic Motion",
+      "difficulty": 3,
+      "description": "Oscillatory motion described by sine/cosine functions — springs and pendulums.",
+      "prerequisites": ["trigonometry", "kinematic_equations"]
+    },
+    {
+      "id": "wave_motion",
+      "name": "Wave Motion",
+      "difficulty": 3,
+      "description": "Transverse and longitudinal waves, wavelength, frequency, speed and superposition.",
+      "prerequisites": ["simple_harmonic_motion"]
+    },
+    {
+      "id": "current_electricity",
+      "name": "Current Electricity",
+      "difficulty": 2,
+      "description": "Electric current, Ohm's law, resistance, series and parallel circuits.",
+      "prerequisites": ["basic_algebra"]
+    },
+    {
+      "id": "magnetic_fields",
+      "name": "Magnetic Fields",
+      "difficulty": 3,
+      "description": "Magnetic force on charges and conductors, Biot-Savart law, Ampere's law.",
+      "prerequisites": ["current_electricity", "vector_decomposition"]
+    }
+  ]
+}

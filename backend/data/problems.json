@@ -1,0 +1,298 @@
+{
+  "problems": [
+    {
+      "concept_id": "newtons_laws",
+      "title": "Box on a Frictionless Surface",
+      "text": "A 5 kg box sits on a frictionless horizontal surface. A horizontal force of 20 N is applied. Find the acceleration.",
+      "difficulty": "easy",
+      "checkpoints": [
+        {
+          "question": "Which law of Newton applies directly here?",
+          "type": "multiple_choice",
+          "unit": "",
+          "hint_on_first_wrong": "Think about the relationship between force, mass and acceleration.",
+          "choices": [
+            { "value": "First Law", "is_correct": false },
+            { "value": "Second Law (F = ma)", "is_correct": true },
+            { "value": "Third Law", "is_correct": false },
+            { "value": "Law of Gravitation", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "First Law", "diagnosis": "The first law describes objects at rest or constant velocity. Here a net force causes acceleration.", "missing_concept_id": "" },
+            { "wrong_choice": "Third Law", "diagnosis": "The third law is about action-reaction pairs, not a single force on one body.", "missing_concept_id": "" }
+          ]
+        },
+        {
+          "question": "What is the acceleration of the box? (a = F / m)",
+          "type": "multiple_choice",
+          "unit": "m/s²",
+          "hint_on_first_wrong": "a = F / m = 20 / 5",
+          "choices": [
+            { "value": "2 m/s²", "is_correct": false },
+            { "value": "4 m/s²", "is_correct": true },
+            { "value": "10 m/s²", "is_correct": false },
+            { "value": "100 m/s²", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "100 m/s²", "diagnosis": "You multiplied F × m instead of dividing. Rearrange F = ma to get a = F / m.", "missing_concept_id": "basic_algebra" }
+          ]
+        }
+      ]
+    },
+    {
+      "concept_id": "newtons_laws",
+      "title": "Two Blocks in Contact",
+      "text": "Two blocks of mass 3 kg and 2 kg are placed in contact on a smooth surface. A force of 10 N pushes the 3 kg block. Find the force between the blocks.",
+      "difficulty": "medium",
+      "checkpoints": [
+        {
+          "question": "What is the acceleration of the system? (treat both blocks as one system)",
+          "type": "multiple_choice",
+          "unit": "m/s²",
+          "hint_on_first_wrong": "Total mass = 3 + 2 = 5 kg. Use a = F / m_total.",
+          "choices": [
+            { "value": "2 m/s²", "is_correct": true },
+            { "value": "5 m/s²", "is_correct": false },
+            { "value": "3.33 m/s²", "is_correct": false },
+            { "value": "10 m/s²", "is_correct": false }
+          ],
+          "error_patterns": []
+        },
+        {
+          "question": "The contact force on the 2 kg block equals?",
+          "type": "multiple_choice",
+          "unit": "N",
+          "hint_on_first_wrong": "Force = mass_of_2kg_block × acceleration = 2 × 2",
+          "choices": [
+            { "value": "2 N", "is_correct": false },
+            { "value": "4 N", "is_correct": true },
+            { "value": "6 N", "is_correct": false },
+            { "value": "10 N", "is_correct": false }
+          ],
+          "error_patterns": []
+        }
+      ]
+    },
+    {
+      "concept_id": "work_energy_power",
+      "title": "Work Done Pulling a Crate",
+      "text": "A crate is pulled 8 m along a floor by a 50 N force at 60° to the horizontal. Find the work done.",
+      "difficulty": "medium",
+      "checkpoints": [
+        {
+          "question": "Which component of force does work along the displacement?",
+          "type": "multiple_choice",
+          "unit": "",
+          "hint_on_first_wrong": "Work = F × d × cos(θ). Only the horizontal component contributes.",
+          "choices": [
+            { "value": "Vertical component (F sin θ)", "is_correct": false },
+            { "value": "Horizontal component (F cos θ)", "is_correct": true },
+            { "value": "The full 50 N", "is_correct": false },
+            { "value": "Normal force", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "Vertical component (F sin θ)", "diagnosis": "The vertical component is perpendicular to the displacement and does zero work.", "missing_concept_id": "vector_decomposition" }
+          ]
+        },
+        {
+          "question": "Calculate the work done. W = F d cos(60°) = 50 × 8 × 0.5",
+          "type": "multiple_choice",
+          "unit": "J",
+          "hint_on_first_wrong": "cos(60°) = 0.5, so W = 50 × 8 × 0.5 = 200 J",
+          "choices": [
+            { "value": "400 J", "is_correct": false },
+            { "value": "200 J", "is_correct": true },
+            { "value": "346 J", "is_correct": false },
+            { "value": "100 J", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "400 J", "diagnosis": "You forgot to apply cos(60°). Work = F × d × cos θ, not just F × d.", "missing_concept_id": "trigonometry" },
+            { "wrong_choice": "346 J", "diagnosis": "You used sin(60°) instead of cos(60°). For work along displacement, use cosine.", "missing_concept_id": "trigonometry" }
+          ]
+        }
+      ]
+    },
+    {
+      "concept_id": "gravitation",
+      "title": "Weight on the Moon",
+      "text": "A person has mass 60 kg. The acceleration due to gravity on the Moon is 1.6 m/s². Find their weight on the Moon.",
+      "difficulty": "easy",
+      "checkpoints": [
+        {
+          "question": "What formula gives weight?",
+          "type": "multiple_choice",
+          "unit": "",
+          "hint_on_first_wrong": "Weight is a force. Recall F = ma, where a = g.",
+          "choices": [
+            { "value": "W = m × g", "is_correct": true },
+            { "value": "W = m / g", "is_correct": false },
+            { "value": "W = m × v", "is_correct": false },
+            { "value": "W = F × d", "is_correct": false }
+          ],
+          "error_patterns": []
+        },
+        {
+          "question": "Calculate the weight on the Moon.",
+          "type": "multiple_choice",
+          "unit": "N",
+          "hint_on_first_wrong": "W = 60 × 1.6",
+          "choices": [
+            { "value": "96 N", "is_correct": true },
+            { "value": "600 N", "is_correct": false },
+            { "value": "37.5 N", "is_correct": false },
+            { "value": "9.6 N", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "600 N", "diagnosis": "You used g = 10 (Earth's gravity) instead of 1.6 (Moon's gravity).", "missing_concept_id": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "concept_id": "simple_harmonic_motion",
+      "title": "Mass on a Spring",
+      "text": "A 0.5 kg mass on a spring (k = 200 N/m) is displaced 0.1 m and released. Find the period of oscillation.",
+      "difficulty": "medium",
+      "checkpoints": [
+        {
+          "question": "The formula for the period of a mass-spring system is?",
+          "type": "multiple_choice",
+          "unit": "",
+          "hint_on_first_wrong": "For a mass-spring: T = 2π√(m/k)",
+          "choices": [
+            { "value": "T = 2π√(m/k)", "is_correct": true },
+            { "value": "T = 2π√(k/m)", "is_correct": false },
+            { "value": "T = 2π√(L/g)", "is_correct": false },
+            { "value": "T = 1/f", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "T = 2π√(k/m)", "diagnosis": "You swapped m and k. For a spring, heavier mass → longer period, so m is in the numerator.", "missing_concept_id": "" }
+          ]
+        },
+        {
+          "question": "Calculate T. √(0.5/200) = √(0.0025) = 0.05. T = 2π × 0.05 ≈ ?",
+          "type": "multiple_choice",
+          "unit": "s",
+          "hint_on_first_wrong": "T = 2 × 3.14 × 0.05 = 0.314 s ≈ 0.31 s",
+          "choices": [
+            { "value": "0.31 s", "is_correct": true },
+            { "value": "3.14 s", "is_correct": false },
+            { "value": "6.28 s", "is_correct": false },
+            { "value": "0.05 s", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "0.05 s", "diagnosis": "You forgot to multiply by 2π. T = 2π × √(m/k), not just √(m/k).", "missing_concept_id": "basic_algebra" }
+          ]
+        }
+      ]
+    },
+    {
+      "concept_id": "wave_motion",
+      "title": "Speed of a Wave",
+      "text": "A wave has frequency 250 Hz and wavelength 1.4 m. Find the speed of the wave.",
+      "difficulty": "easy",
+      "checkpoints": [
+        {
+          "question": "The wave speed equation is?",
+          "type": "multiple_choice",
+          "unit": "",
+          "hint_on_first_wrong": "v = f × λ (speed = frequency × wavelength)",
+          "choices": [
+            { "value": "v = f × λ", "is_correct": true },
+            { "value": "v = f / λ", "is_correct": false },
+            { "value": "v = λ / f", "is_correct": false },
+            { "value": "v = f + λ", "is_correct": false }
+          ],
+          "error_patterns": []
+        },
+        {
+          "question": "Calculate the wave speed.",
+          "type": "multiple_choice",
+          "unit": "m/s",
+          "hint_on_first_wrong": "v = 250 × 1.4 = 350 m/s",
+          "choices": [
+            { "value": "350 m/s", "is_correct": true },
+            { "value": "178.6 m/s", "is_correct": false },
+            { "value": "251.4 m/s", "is_correct": false },
+            { "value": "3500 m/s", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "178.6 m/s", "diagnosis": "You divided instead of multiplying. v = f × λ, not f / λ.", "missing_concept_id": "basic_algebra" }
+          ]
+        }
+      ]
+    },
+    {
+      "concept_id": "current_electricity",
+      "title": "Resistors in Series",
+      "text": "Three resistors of 4 Ω, 6 Ω and 10 Ω are connected in series to a 40 V battery. Find the current.",
+      "difficulty": "easy",
+      "checkpoints": [
+        {
+          "question": "Total resistance in series = ?",
+          "type": "multiple_choice",
+          "unit": "Ω",
+          "hint_on_first_wrong": "In series: R_total = R₁ + R₂ + R₃",
+          "choices": [
+            { "value": "20 Ω", "is_correct": true },
+            { "value": "1.95 Ω", "is_correct": false },
+            { "value": "10 Ω", "is_correct": false },
+            { "value": "6.67 Ω", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "1.95 Ω", "diagnosis": "You used the parallel formula (1/R = 1/R₁ + 1/R₂ + 1/R₃). These are in series, so just add them.", "missing_concept_id": "" }
+          ]
+        },
+        {
+          "question": "Current I = V / R_total = ?",
+          "type": "multiple_choice",
+          "unit": "A",
+          "hint_on_first_wrong": "I = 40 / 20 = 2 A",
+          "choices": [
+            { "value": "2 A", "is_correct": true },
+            { "value": "800 A", "is_correct": false },
+            { "value": "0.5 A", "is_correct": false },
+            { "value": "4 A", "is_correct": false }
+          ],
+          "error_patterns": [
+            { "wrong_choice": "800 A", "diagnosis": "You multiplied V × R instead of dividing. Ohm's law: I = V / R.", "missing_concept_id": "basic_algebra" }
+          ]
+        }
+      ]
+    },
+    {
+      "concept_id": "magnetic_fields",
+      "title": "Force on a Current-Carrying Wire",
+      "text": "A 0.5 m wire carries 3 A of current perpendicular to a 0.2 T magnetic field. Find the force.",
+      "difficulty": "medium",
+      "checkpoints": [
+        {
+          "question": "The formula for force on a current-carrying wire is?",
+          "type": "multiple_choice",
+          "unit": "",
+          "hint_on_first_wrong": "F = BIL sin θ. When perpendicular, sin 90° = 1.",
+          "choices": [
+            { "value": "F = BIL", "is_correct": true },
+            { "value": "F = qvB", "is_correct": false },
+            { "value": "F = ma", "is_correct": false },
+            { "value": "F = kq₁q₂/r²", "is_correct": false }
+          ],
+          "error_patterns": []
+        },
+        {
+          "question": "Calculate F = 0.2 × 3 × 0.5 = ?",
+          "type": "multiple_choice",
+          "unit": "N",
+          "hint_on_first_wrong": "F = B × I × L = 0.2 × 3 × 0.5 = 0.3 N",
+          "choices": [
+            { "value": "0.3 N", "is_correct": true },
+            { "value": "3.0 N", "is_correct": false },
+            { "value": "0.03 N", "is_correct": false },
+            { "value": "30 N", "is_correct": false }
+          ],
+          "error_patterns": []
+        }
+      ]
+    }
+  ]
+}
