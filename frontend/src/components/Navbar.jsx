@@ -6,7 +6,8 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  function handleLogout() {
+  function handleLogout(e) {
+    e.preventDefault();
     logout();
     navigate("/", { replace: true });
   }

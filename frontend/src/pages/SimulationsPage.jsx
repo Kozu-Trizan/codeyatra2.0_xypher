@@ -5,14 +5,15 @@ import { useAuth } from "../context/AuthContext";
 const SIM_META = {
   vector_decomposition: { icon: "🧭", color: "indigo", label: "Physics" },
   function_graphing:    { icon: "📈", color: "emerald", label: "Mathematics" },
+  area_under_curve:     { icon: "📊", color: "violet", label: "Mathematics" },
+  projectile_motion:    { icon: "🎯", color: "sky", label: "Physics" },
+  pendulum_sim:         { icon: "🕐", color: "teal", label: "Physics" },
+  wave_sim:             { icon: "🌊", color: "cyan", label: "Physics" },
+  circuit_builder:      { icon: "⚡", color: "yellow", label: "Physics" },
   molecular_structure:  { icon: "🧪", color: "rose", label: "Chemistry" },
 };
 
-const routePrefix = {
-  vector_decomposition: "/simulations/physics/",
-  function_graphing:    "/simulations/math/",
-  molecular_structure:  "/simulations/chemistry/",
-};
+/* Route uses the simulation_type directly: /simulations/:simType/:conceptId */
 
 export default function SimulationsPage() {
   const { authFetch } = useAuth();
@@ -40,8 +41,8 @@ export default function SimulationsPage() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {sims.map((sim) => {
           const meta = SIM_META[sim.simulation_type] || { icon: "🔬", color: "gray", label: "Simulation" };
-          const to = routePrefix[sim.simulation_type]
-            ? `${routePrefix[sim.simulation_type]}${sim.concept_id}`
+          const to = sim.simulation_type
+            ? `/simulations/${sim.simulation_type}/${sim.concept_id}`
             : "#";
           return (
             <Link key={sim.id} to={to}

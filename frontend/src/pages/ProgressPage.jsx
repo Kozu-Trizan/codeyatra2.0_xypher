@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -101,7 +101,7 @@ export default function ProgressPage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center text-2xl">âš </div>
+        <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center text-2xl">{"\u26A0"}</div>
         <p className="text-red-600 font-semibold">Failed to load progress</p>
         <p className="text-text-muted text-sm">{error}</p>
         <button onClick={() => window.location.reload()}
@@ -259,7 +259,7 @@ export default function ProgressPage() {
                 <p className="font-semibold text-text-primary text-sm truncate">{row.name}</p>
                 <p className="text-[11px] text-text-muted mt-0.5">
                   {row.neb_class ? `Class ${row.neb_class}` : ""}
-                  {row.masteredAt ? ` · Mastered ${new Date(row.masteredAt).toLocaleDateString()}` : ""}
+                  {row.masteredAt ? `  ·  Mastered ${new Date(row.masteredAt).toLocaleDateString()}` : ""}
                 </p>
               </div>
 
@@ -316,7 +316,7 @@ export default function ProgressPage() {
           </div>
           <button onClick={() => navigate("/diagnose")}
             className="shrink-0 px-6 py-2.5 rounded-xl bg-amber-brand hover:bg-amber-hover font-bold text-sm text-white transition-all active:scale-95 shadow-sm shadow-amber-brand/20">
-            Continue â†’
+            Continue {"\u2192"}
           </button>
         </div>
       )}

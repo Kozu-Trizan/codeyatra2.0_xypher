@@ -23,6 +23,7 @@ export default function QuestionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [subjectFilter, setSubjectFilter] = useState("all"); // Added subject filter
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
@@ -42,6 +43,7 @@ export default function QuestionsPage() {
 
   const filtered = concepts
     .filter((c) => filter === "all" || String(c.neb_class) === filter)
+    .filter((c) => subjectFilter === "all" || c.subject?.toLowerCase() === subjectFilter.toLowerCase())
     .filter((c) => !search || c.name?.toLowerCase().includes(search.toLowerCase()));
 
   if (loading) {
@@ -113,7 +115,24 @@ export default function QuestionsPage() {
           />
         </div>
 
-        {/* Filter chips */}
+        {/* Subject Filter */}
+        <div className="flex bg-white rounded-xl border border-gray-200 p-1">
+          {["all", "physics", "math", "chemistry"].map((s) => (
+             <button
+               key={s}
+               onClick={() => setSubjectFilter(s)}
+               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
+                 subjectFilter === s
+                   ? "bg-amber-100 text-amber-700"
+                   : "text-text-secondary hover:bg-gray-50"
+               }`}
+             >
+               {s}
+             </button>
+          ))}
+        </div>
+
+        {/* Class Filter */}
         <div className="flex gap-2">
           {["all", "11", "12"].map((f) => (
             <button
@@ -151,8 +170,7 @@ export default function QuestionsPage() {
               concept={concept}
               index={i}
               onSolve={() => navigate(`/learn/${concept.id}`)}
-              onDiagnose={() => navigate("/diagnose")}
-              onPath={() => navigate("/pathfinder")}
+              onPath={() => navigate(`/pathfinder?concept=${concept.id}`)}
             />
           ))}
         </div>
@@ -161,29 +179,26 @@ export default function QuestionsPage() {
       {/* CTA */}
       <div className="mt-10 rounded-2xl bg-gradient-to-br from-amber-brand/10 via-cream-100 to-amber-brand/5 border border-amber-200 p-6 flex flex-col sm:flex-row items-center gap-4">
         <div className="w-12 h-12 rounded-xl bg-amber-brand/20 text-amber-700 flex items-center justify-center shrink-0">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" /></svg>
-        </div>
-        <div className="w-12 h-12 rounded-xl bg-amber-brand/20 text-amber-700 flex items-center justify-center shrink-0">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" /></svg>
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
         </div>
         <div className="flex-1 text-center sm:text-left">
-          <p className="font-bold text-text-primary">Not sure where to start?</p>
+          <p className="font-bold text-text-primary">Keep pushing!</p>
           <p className="text-text-secondary text-sm mt-0.5">
-            Let Aarvana detect which prerequisites you're missing and build your learning path.
+            Every mission you complete unlocks more of your learning path.
           </p>
         </div>
         <button
-          onClick={() => navigate("/diagnose")}
+          onClick={() => navigate("/pathfinder")}
           className="shrink-0 px-6 py-2.5 rounded-xl bg-amber-brand hover:bg-amber-hover font-bold text-sm transition-all active:scale-95 shadow-sm shadow-amber-brand/20"
         >
-          Run Diagnosis
+          View Roadmap
         </button>
       </div>
     </main>
   );
 }
 
-function MissionCard({ concept, index, onSolve, onDiagnose, onPath }) {
+function MissionCard({ concept, index, onSolve, onPath }) {
   const diff = DIFFICULTY_BADGES[concept.difficulty] || DIFFICULTY_BADGES.medium;
   const prereqCount = concept.prerequisites?.length || 0;
 
@@ -246,12 +261,6 @@ function MissionCard({ concept, index, onSolve, onDiagnose, onPath }) {
             className="text-[11px] px-3 py-1.5 rounded-lg border border-gray-200 hover:border-amber-brand/40 text-text-secondary hover:text-amber-700 font-semibold transition-all"
           >
             Path
-          </button>
-          <button
-            onClick={onDiagnose}
-            className="text-[11px] px-3 py-1.5 rounded-lg border border-gray-200 hover:border-amber-brand/40 text-text-secondary hover:text-amber-700 font-semibold transition-all"
-          >
-            Diagnose
           </button>
           <button
             onClick={onSolve}

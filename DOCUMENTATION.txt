@@ -1,0 +1,192 @@
+================================================================================
+                                  AARVANA
+                         Adaptive Learning Platform
+================================================================================
+
+
+1. TITLE
+--------------------------------------------------------------------------------
+   Aarvana — Adaptive Learning Platform
+
+
+2. SUB THEME
+--------------------------------------------------------------------------------
+   Education & Technology — Personalised STEM Learning
+
+
+3. GITHUB LINK
+--------------------------------------------------------------------------------
+   https://github.com/<your-username>/codeyatra2.0_xypher
+   Branch: tk
+
+
+4. TEAM
+--------------------------------------------------------------------------------
+   Team Name : Xypher
+   Members   : <Member 1 — Role>
+               <Member 2 — Role>
+               <Member 3 — Role>
+   College   : <College / University Name>
+
+
+5. ABSTRACT
+--------------------------------------------------------------------------------
+   Aarvana is a web-based adaptive learning platform that delivers personalised
+   STEM education through deterministic diagnostics, interactive simulations,
+   and structured learning paths.
+
+   Key ideas:
+   - A rule-based diagnostic engine (SikshyaMap) identifies prerequisite gaps
+     in a student's understanding using pattern-matched heuristics — no external
+     LLM or AI service is called.
+   - Concepts are organised in a dependency graph; the platform builds a
+     step-by-step learning roadmap tailored to each student.
+   - Eight interactive simulations let students explore physics, mathematics,
+     and chemistry concepts hands-on with real-time visual feedback.
+   - Gamified progress tracking (XP, mastery levels, missions) keeps learners
+     motivated and provides measurable outcomes.
+
+
+6. FEATURES / SERVICES
+--------------------------------------------------------------------------------
+   6.1  Deterministic Diagnostic Engine (SikshyaMap)
+        - Analyses student responses using regex-based pattern matching.
+        - Detects specific error types: trigonometric decomposition mistakes,
+          angle misinterpretation, force-sign errors, stoichiometry confusion,
+          algebraic / calculus gaps, and common misconceptions.
+        - Generates targeted Socratic hints and prerequisite recommendations
+          without any hallucination — every output is template-derived.
+
+   6.2  Concept Dependency Graph
+        - 16 seeded concepts across Physics, Mathematics, and Chemistry.
+        - Prerequisite chains computed server-side; rendered as a non-linear
+          zigzag roadmap on the frontend.
+        - Subject-based filtering and difficulty ordering.
+
+   6.3  Interactive Simulations (8 types)
+        - Physics  : Vector Decomposition, Projectile Motion, Pendulum (SHM),
+                     Wave Superposition, Circuit Builder (Ohm's Law).
+        - Maths    : Function Graphing (multi-function), Area Under Curves
+                     (Simpson's Rule integration).
+        - Chemistry: Molecular Structure (3-D auto-rotate, Phong shading).
+        - All simulations feature animated visuals, neon-glow aesthetics,
+          gamified task prompts, and real-time interaction tracking.
+
+   6.4  Personalised Learning Paths
+        - Mission-based navigation: each concept acts as a mission node.
+        - "Start Learning" button links directly to curated resources.
+        - Resource types include articles, videos, exercises, and references.
+
+   6.5  Step-by-Step Diagnostic Sessions
+        - Students answer concept-specific diagnostic questions.
+        - The engine evaluates each response, updates mastery status, and
+          surfaces the next recommended concept.
+
+   6.6  Progress & Gamification
+        - Per-student dashboard showing mastered / in-progress / needs-review
+          counts and XP totals.
+        - Visual roadmap highlights completed missions and upcoming goals.
+
+   6.7  Authentication & Onboarding
+        - JWT-based authentication (signup, login, token refresh).
+        - Onboarding collects grade and preferred subjects to personalise the
+          initial experience.
+
+   6.8  Tutor Chat Interface
+        - In-app chat panel on the Learn page provides contextual guidance
+          while students work through resources and simulations.
+
+
+7. API / LLM INTEGRATION
+--------------------------------------------------------------------------------
+   7.1  REST API (Flask)
+        The backend exposes nine endpoint groups under /api/:
+
+        Endpoint Group    Purpose
+        ─────────────     ────────────────────────────────────────────
+        /api/auth         Signup, login, JWT token management
+        /api/students     Student profile CRUD, grade & subject prefs
+        /api/concepts     List, filter, single concept, prerequisite
+                          chain, dependency graph
+        /api/problems     Practice problems linked to concepts
+        /api/resources    Curated learning resources per concept
+        /api/diagnose     Generate diagnostic questions, evaluate
+                          answers, update mastery
+        /api/sessions     Session lifecycle management
+        /api/progress     Per-student mastery overview and XP stats
+        /api/simulations  Simulation metadata and validation
+
+   7.2  LLM / External AI
+        - None. Aarvana does NOT integrate any external LLM or AI API
+          (no OpenAI, Gemini, Anthropic, Ollama, Groq, or LangChain).
+        - All diagnostics are powered by SikshyaMap, a fully deterministic,
+          rule-based engine that uses regex heuristics and template-driven
+          outputs. This design guarantees reproducibility and eliminates
+          hallucination risk.
+
+
+8. TECH STACK
+--------------------------------------------------------------------------------
+   Layer       Technology              Version
+   ─────       ──────────              ───────
+   Frontend    React                   19.2.0
+               React Router DOM        7.13.0
+               Vite                    7.3.1
+               Tailwind CSS            4.2.0
+
+   Backend     Flask                   3.1.3
+               Flask-SQLAlchemy        3.1.1
+               Flask-JWT-Extended      4.7.1
+               Flask-CORS              6.0.2
+               SQLAlchemy              2.0.46
+
+   Database    SQLite (dev)            —
+
+   Language    Python 3.x (backend)
+               JavaScript / JSX (frontend)
+
+
+9. RESULTS
+--------------------------------------------------------------------------------
+   (Screenshots omitted for now.)
+
+   - Signup & Onboarding: Students register, select grade and subjects;
+     the platform immediately filters relevant concepts.
+   - Pathfinder (Roadmap): Non-linear zigzag roadmap visualises the concept
+     dependency graph with mission nodes colour-coded by mastery status.
+   - Diagnostics: Adaptive question sets surface prerequisite gaps; Socratic
+     hints guide students toward the correct reasoning.
+   - Simulations: Eight fully interactive simulations render in-browser with
+     animated particles, real-time parameter controls, and instant feedback
+     overlays.
+   - Progress Dashboard: Aggregated view of mastered, in-progress, and
+     needs-review concepts with cumulative XP tracking.
+   - Seeded Data: 16 concepts, 16 resources, 21 problems, 55 diagnostic
+     questions, and 8 simulations ready out of the box.
+
+
+10. CONCLUSION
+--------------------------------------------------------------------------------
+   Aarvana demonstrates that effective personalised learning does not require
+   large language models. By combining a deterministic diagnostic engine with
+   structured concept graphs and interactive simulations, the platform delivers
+   targeted, reproducible feedback that adapts to each student's gaps.
+
+   Key takeaways:
+   - Rule-based diagnostics provide transparent, hallucination-free guidance.
+   - A dependency-aware roadmap ensures students build knowledge in the right
+     order rather than skipping foundational prerequisites.
+   - Gamified simulations increase engagement and reinforce conceptual
+     understanding through hands-on experimentation.
+
+   Future scope:
+   - Extend the concept library to cover additional STEM subjects and grades.
+   - Introduce collaborative features (peer study groups, leaderboards).
+   - Add analytics dashboards for educators to monitor class-wide progress.
+   - Optionally integrate an LLM layer for open-ended Q&A while retaining the
+     deterministic engine as the primary diagnostic backbone.
+
+
+================================================================================
+                              END OF DOCUMENTATION
+================================================================================

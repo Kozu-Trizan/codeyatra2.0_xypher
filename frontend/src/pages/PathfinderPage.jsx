@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const PREREQ_LABELS = {
@@ -25,6 +25,7 @@ const TIER_NAMES = ["Foundation", "Core Prerequisites", "Intermediate", "Advance
 export default function PathfinderPage() {
   const { authFetch } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [concepts, setConcepts] = useState([]);
   const [selectedId, setSelectedId] = useState("");
@@ -40,13 +41,22 @@ export default function PathfinderPage() {
       .catch(() => setLoadingConcepts(false));
   }, []);
 
-  const handleFind = async () => {
-    if (!selectedId) return;
+  /* Auto-fetch path if concept query param is set */
+  useEffect(() => {
+    const conceptParam = searchParams.get("concept");
+    if (conceptParam && !loadingConcepts) {
+      setSelectedId(conceptParam);
+      fetchPath(conceptParam);
+    }
+  }, [searchParams, loadingConcepts]);
+
+  const fetchPath = async (id) => {
+    if (!id) return;
     setLoadingPath(true);
     setPath(null);
     setError(null);
     try {
-      const res = await authFetch(`/api/concepts/${selectedId}/path`);
+      const res = await authFetch(`/api/concepts/${id}/path`);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setPath(data?.data ?? data);
@@ -56,6 +66,8 @@ export default function PathfinderPage() {
       setLoadingPath(false);
     }
   };
+
+  const handleFind = () => fetchPath(selectedId);
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-10">
@@ -153,167 +165,237 @@ export default function PathfinderPage() {
 
 /* ───────────────────── Roadmap Visualization ───────────────────── */
 
-function RoadmapTree({ path, onDiagnose }) {
+function RoadmapTree({ path }) {
   const allNodes = path.prerequisite_chain || [];
-  const prereqs = allNodes.slice(0, -1);
-  const target = allNodes.length > 0 ? allNodes[allNodes.length - 1] : path.concept;
-
-  /* Group nodes into tiers (reversed: foundation at bottom) */
-  const tiers = [];
-  if (prereqs.length === 0) {
-    tiers.push({ name: "Target Concept", subtitle: "Where you want to reach", nodes: [{ ...target, isTarget: true }] });
-  } else {
-    /* target on top */
-    tiers.push({ name: "Target Concept", subtitle: "Where you want to reach", nodes: [{ ...target, isTarget: true }] });
-    /* intermediate prereqs (all middle ones) */
-    if (prereqs.length > 1) {
-      tiers.push({ name: "Intermediate", subtitle: "Building blocks for the target", nodes: prereqs.slice(0, -1).map((p) => ({ ...p })) });
-    }
-    /* foundation (last prereq = base) */
-    tiers.push({ name: "Foundation", subtitle: "Where it all starts", nodes: [{ ...prereqs[prereqs.length - 1], isFoundation: true }] });
-  }
+  const visualNodes = [...allNodes].reverse(); // [Target, ..., Foundation]
+  const [selectedNode, setSelectedNode] = useState(null);
 
   return (
-    <div className="flex flex-col items-center gap-0">
+    <div className="relative pb-20">
+      {/* Resource Modal */}
+      {selectedNode && (
+        <ResourceModal node={selectedNode} onClose={() => setSelectedNode(null)} />
+      )}
+
       {/* XP banner */}
-      <div className="w-full rounded-xl bg-gradient-to-r from-amber-brand/10 via-cream-100 to-amber-brand/10 border border-amber-200 px-5 py-3.5 mb-8 flex items-center gap-3">
+      <div className="w-full rounded-xl bg-gradient-to-r from-amber-brand/10 via-cream-100 to-amber-brand/10 border border-amber-200 px-5 py-3.5 mb-12 flex items-center gap-3">
         <div className="w-9 h-9 rounded-lg bg-amber-brand/20 text-amber-700 flex items-center justify-center flex-shrink-0">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" /></svg>
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-text-primary">
-            {prereqs.length} prerequisite{prereqs.length !== 1 ? "s" : ""} to master{" "}
-            <span className="text-amber-brand">{target?.name}</span>
+            {allNodes.length - 1} prerequisite{allNodes.length - 1 !== 1 ? "s" : ""} to master{" "}
+            <span className="text-amber-brand">{visualNodes[0]?.name}</span>
           </p>
-          <p className="text-xs text-text-muted mt-0.5">Complete from bottom → top to unlock your target</p>
+          <p className="text-xs text-text-muted mt-0.5">Follow the winding path from bottom to top</p>
         </div>
-        <span className="text-xs font-bold bg-amber-brand text-white px-2.5 py-1 rounded-full">
-          +{(prereqs.length + 1) * 50} XP
-        </span>
       </div>
 
-      {/* Tiers */}
-      {tiers.map((tier, ti) => {
-        const palette = ti === 0
-          ? { bg: "bg-amber-brand/5", border: "border-amber-brand", ring: "ring-amber-brand/20" }
-          : ti === tiers.length - 1
-            ? { bg: "bg-emerald-50", border: "border-emerald-300", ring: "ring-emerald-200" }
-            : { bg: "bg-white", border: "border-gray-200", ring: "" };
+      {/* Winding zigzag path */}
+      <div className="relative w-full max-w-lg mx-auto" style={{ minHeight: visualNodes.length * 140 }}>
+        {/* SVG connector lines */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+          {visualNodes.map((_, index) => {
+            if (index >= visualNodes.length - 1) return null;
+            const y1 = 60 + index * 130;
+            const y2 = 60 + (index + 1) * 130;
+            const isEven = index % 2 === 0;
+            const isNextEven = (index + 1) % 2 === 0;
+            // x positions: even = 30%, odd = 70%
+            const x1Pct = isEven ? 30 : 70;
+            const x2Pct = isNextEven ? 30 : 70;
+            return (
+              <path
+                key={index}
+                d={`M ${x1Pct}% ${y1} C ${x1Pct}% ${y1 + 65}, ${x2Pct}% ${y2 - 65}, ${x2Pct}% ${y2}`}
+                fill="none"
+                stroke="url(#pathGrad)"
+                strokeWidth="3"
+                strokeDasharray="8 6"
+                opacity="0.6"
+              />
+            );
+          })}
+          <defs>
+            <linearGradient id="pathGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f59e0b" />
+              <stop offset="100%" stopColor="#d97706" />
+            </linearGradient>
+          </defs>
+        </svg>
 
-        return (
-          <div key={ti} className="w-full flex flex-col items-center">
-            {/* Tier label */}
-            <div className="w-full mb-3">
-              <h3 className="text-sm font-bold text-text-primary">{tier.name}</h3>
-              <p className="text-xs text-text-muted">{tier.subtitle}</p>
-            </div>
+        {/* Nodes */}
+        {visualNodes.map((node, index) => {
+          const isTarget = index === 0;
+          const isFoundation = index === visualNodes.length - 1;
+          const isEven = index % 2 === 0;
 
-            {/* Node cards grid */}
-            <div className={`w-full grid gap-3 mb-2 ${tier.nodes.length > 1 ? "sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
-              {tier.nodes.map((node, ni) => {
-                const isTarget = node.isTarget;
-                const isFoundation = node.isFoundation;
+          // Zigzag: even indices left side, odd indices right side
+          const alignClass = isEven ? "mr-auto" : "ml-auto";
+          const topPos = 30 + index * 130;
 
-                return (
-                  <div
-                    key={node.id || ni}
-                    className={`relative rounded-2xl border-2 p-5 transition-all hover:shadow-md ${
-                      isTarget
-                        ? "bg-amber-brand/5 border-amber-brand shadow-sm shadow-amber-brand/10"
-                        : isFoundation
-                          ? "bg-emerald-50 border-emerald-300"
-                          : "bg-white border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    {/* Status badge */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                        isTarget ? "bg-amber-brand/20" : isFoundation ? "bg-emerald-100" : "bg-gray-100"
-                      }`}>
-                        {isTarget ? (
-                          <svg className="w-5 h-5 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3l1.664 9.136M3 3h18M3 3L1.5 1.5M21 3l-1.664 9.136M21 3l1.5-1.5M9 12h6m-3-3v6m-6.336 2.864A9 9 0 1020.336 14.864" /></svg>
-                        ) : isFoundation ? (
-                          <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>
-                        ) : (
-                          <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-                        )}
-                      </div>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        isTarget
-                          ? "bg-amber-brand/20 text-amber-700"
-                          : isFoundation
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-gray-100 text-gray-500"
-                      }`}>
-                        {isTarget ? "Target" : isFoundation ? "Foundation" : "Locked"}
-                      </span>
+          return (
+            <div
+              key={node.id || index}
+              className={`absolute ${alignClass}`}
+              style={{
+                top: topPos,
+                left: isEven ? "8%" : "auto",
+                right: isEven ? "auto" : "8%",
+                zIndex: 10,
+              }}
+            >
+              <button
+                onClick={() => setSelectedNode(node)}
+                className={`group relative flex items-center gap-3 transition-all hover:scale-105 active:scale-95 ${
+                  isEven ? "flex-row" : "flex-row-reverse"
+                }`}
+              >
+                {/* Node circle */}
+                <div
+                  className={`w-16 h-16 rounded-full border-[3px] flex items-center justify-center shadow-lg transition-all group-hover:shadow-xl ${
+                    isTarget
+                      ? "bg-gradient-to-br from-amber-400 to-amber-600 border-amber-300 text-white shadow-amber-500/30"
+                      : isFoundation
+                      ? "bg-gradient-to-br from-emerald-400 to-emerald-600 border-emerald-300 text-white shadow-emerald-500/30"
+                      : "bg-gradient-to-br from-white to-gray-50 border-gray-300 text-text-primary group-hover:border-amber-brand shadow-gray-200/50"
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="text-[8px] font-bold uppercase tracking-wider opacity-80">
+                      {isTarget ? "GOAL" : isFoundation ? "START" : `${visualNodes.length - index}`}
                     </div>
-
-                    <h4 className="font-bold text-text-primary text-sm leading-snug">
-                      {node.name || PREREQ_LABELS[node.id] || node.id}
-                    </h4>
-
-                    {node.prerequisites && node.prerequisites.length > 0 && (
-                      <p className="text-[11px] text-text-muted mt-1.5">
-                        Requires: {node.prerequisites.map((p) => PREREQ_LABELS[p] || p).join(", ")}
-                      </p>
-                    )}
-
-                    {/* XP reward */}
-                    <div className="mt-3 flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5 text-amber-brand" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                      <span className="text-[11px] font-semibold text-text-muted">+50 XP on mastery</span>
-                    </div>
+                    <svg
+                      className={`w-4 h-4 mx-auto ${isTarget || isFoundation ? "text-white" : "text-amber-brand"}`}
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      {isTarget ? (
+                        <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      ) : isFoundation ? (
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                      ) : (
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      )}
+                    </svg>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Connector */}
-            {ti < tiers.length - 1 && (
-              <div className="flex flex-col items-center py-2">
-                <div className="w-0.5 h-5 bg-gradient-to-b from-gray-300 to-gray-200 rounded-full" />
-                <div className="w-6 h-6 rounded-full bg-cream-200 border-2 border-gray-300 flex items-center justify-center">
-                  <span className="text-text-muted text-[10px]">▼</span>
                 </div>
-                <div className="w-0.5 h-5 bg-gradient-to-b from-gray-200 to-gray-300 rounded-full" />
-              </div>
-            )}
-          </div>
-        );
-      })}
 
-      {/* How to read callout */}
-      <div className="w-full mt-6 rounded-2xl bg-cream-100 border border-cream-300 p-5">
-        <h4 className="font-bold text-sm text-text-primary mb-2">How to read this roadmap</h4>
-        <p className="text-xs text-text-secondary leading-relaxed">
-          Start from the <span className="font-semibold">Foundation</span> layer at the bottom and work your way up.
-          Each concept must be mastered before unlocking dependent concepts above it.
-          If a concept is marked as a <span className="font-semibold text-rose-500">Blocker</span>,
-          it means the diagnostic mission detected a gap there. Complete the recommended lesson and verification quiz to clear it.
-        </p>
-      </div>
-
-      {/* CTA */}
-      <div className="mt-6 w-full rounded-2xl bg-gradient-to-br from-amber-brand/10 via-cream-100 to-amber-brand/5 border border-amber-200 p-6 text-center">
-        <div className="w-12 h-12 rounded-xl bg-amber-brand/20 text-amber-700 flex items-center justify-center mx-auto mb-3">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-          </svg>
-        </div>
-        <p className="text-text-primary font-bold text-lg mb-1">
-          Ready to find your gaps?
-        </p>
-        <p className="text-text-secondary text-sm mb-4 max-w-sm mx-auto">
-          Run a diagnostic mission and Aarvana will pinpoint exactly which prerequisites need work.
-        </p>
-        <button
-          onClick={onDiagnose}
-          className="px-8 py-3 rounded-xl bg-amber-brand hover:bg-amber-hover font-bold text-sm transition-all active:scale-95 shadow-sm shadow-amber-brand/20"
-        >
-          Start Diagnostic
-        </button>
+                {/* Label card */}
+                <div
+                  className={`bg-white rounded-xl border border-gray-200 px-4 py-2.5 shadow-sm group-hover:shadow-md group-hover:border-amber-brand/40 transition-all max-w-[180px] ${
+                    isEven ? "text-left" : "text-right"
+                  }`}
+                >
+                  <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${
+                    isTarget ? "text-amber-600" : isFoundation ? "text-emerald-600" : "text-text-muted"
+                  }`}>
+                    {isTarget ? "Target Concept" : isFoundation ? "Foundation" : `Step ${visualNodes.length - index}`}
+                  </div>
+                  <div className="text-sm font-extrabold text-text-primary leading-snug line-clamp-2">
+                    {node.name}
+                  </div>
+                  <div className="text-[10px] text-amber-600 font-medium mt-1 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                    Tap for resources
+                  </div>
+                </div>
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
+
+function ResourceModal({ node, onClose }) {
+    const { authFetch } = useAuth();
+    const navigate = useNavigate();
+    const [resources, setResources] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const TYPE_ICONS = {
+      video: "\ud83c\udfa5",
+      article: "\ud83d\udcdd",
+      exercise: "\ud83c\udfaf",
+      textbook: "\ud83d\udcda",
+      interactive: "\ud83d\udd2c",
+      quiz: "\u2753",
+    };
+
+    useEffect(() => {
+        authFetch(`/api/resources?concept_id=${node.id}`)
+            .then(r => r.json())
+            .then(d => {
+                setResources(d.data?.resources || []);
+                setLoading(false);
+            })
+            .catch(() => setLoading(false));
+    }, [node.id]);
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+                <div className="bg-amber-brand p-4 flex justify-between items-center text-white">
+                    <h3 className="font-bold text-lg">{node.name}</h3>
+                    <button onClick={onClose} className="hover:bg-white/20 p-1 rounded-lg transition-colors">
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div className="p-6 max-h-[60vh] overflow-y-auto">
+                    {/* Quick actions */}
+                    <div className="flex gap-2 mb-5">
+                        <button
+                            onClick={() => { onClose(); navigate(`/learn/${node.id}`); }}
+                            className="flex-1 py-2.5 rounded-xl bg-amber-brand hover:bg-amber-hover text-white text-sm font-bold transition-all active:scale-95"
+                        >
+                            Start Learning
+                        </button>
+                        <button
+                            onClick={() => { onClose(); navigate(`/pathfinder?concept=${node.id}`); }}
+                            className="px-4 py-2.5 rounded-xl border border-gray-200 hover:border-amber-brand/40 text-text-secondary text-sm font-semibold transition-all"
+                        >
+                            View Path
+                        </button>
+                    </div>
+
+                    <h4 className="flex items-center gap-2 font-bold text-text-primary mb-4">
+                        <span className="w-2 h-6 bg-amber-brand rounded-full"/>
+                        Recommended Resources
+                    </h4>
+                    
+                    {loading ? (
+                        <div className="flex justify-center py-8"><div className="w-8 h-8 border-2 border-amber-brand border-t-transparent rounded-full animate-spin"/></div>
+                    ) : resources.length === 0 ? (
+                        <div className="text-center py-8 text-text-secondary">
+                            <p>No specific resources found for this concept yet.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {resources.map((res, i) => (
+                                <a 
+                                    key={i} 
+                                    href={res.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="block p-4 rounded-xl border border-gray-200 hover:border-amber-brand hover:bg-amber-brand/5 transition-all group"
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <span className="text-xl flex-shrink-0 mt-0.5">{TYPE_ICONS[res.type?.toLowerCase()] || "\ud83d\udcce"}</span>
+                                        <div className="flex-1">
+                                            <p className="font-bold text-sm text-text-primary group-hover:text-amber-700">{res.title}</p>
+                                            <p className="text-xs text-text-muted mt-1 uppercase tracking-wider">{res.type}</p>
+                                        </div>
+                                        <svg className="w-5 h-5 text-gray-300 group-hover:text-amber-brand flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+

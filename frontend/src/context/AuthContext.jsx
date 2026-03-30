@@ -46,11 +46,11 @@ export function AuthProvider({ children }) {
   // ── auth actions ─────────────────────────────────────────────────────────
 
   /** POST /api/auth/register */
-  async function signup({ name, email, password }) {
+  async function signup({ name, email, password, grade }) {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, grade }),
     });
     const json = await res.json();
     if (!res.ok)
@@ -63,8 +63,8 @@ export function AuthProvider({ children }) {
       name: student.name ?? name,
       email,
       onboardingDone: false,
-      class: null,
-      subject: null,
+      class: grade || student.grade || null,
+      subject: null, // Keep existing structure if needed, or update
     };
     setToken(payload.access_token ?? null);
     setUser(newUser);

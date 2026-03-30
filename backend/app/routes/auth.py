@@ -22,6 +22,8 @@ def handle_register():
     name = data.get("name", "").strip()
     email = data.get("email", "").strip().lower()
     password = data.get("password", "")
+    grade = data.get("grade")  # Could be int/string
+    subjects = data.get("subjects", []) # List of subjects
 
     errors = {}
     if not name:
@@ -30,15 +32,25 @@ def handle_register():
         errors["email"] = "A valid email is required."
     if len(password) < 6:
         errors["password"] = "Password must be at least 6 characters."
+
+    # Validate grade if present (optional but good)
+    if grade:
+        try:
+            grade = int(grade)
+        except ValueError:
+            errors["grade"] = "Grade must be a number."
+
     if errors:
         return error_response("VALIDATION_ERROR", "Invalid input parameters.", errors, 400)
     if Student.query.filter_by(email=email).first():
         return error_response("CONFLICT", "Email already registered.", {"email": email}, 409)
-
+        
     student = Student(
         name=name,
         email=email,
         password_hash=generate_password_hash(password),
+        grade=grade,
+        subjects=",".join(subjects) if isinstance(subjects, list) else str(subjects or "")
     )
     db.session.add(student)
     db.session.commit()

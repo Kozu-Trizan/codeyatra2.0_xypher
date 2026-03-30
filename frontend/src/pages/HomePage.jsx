@@ -46,7 +46,7 @@ const FEATURE_ICONS = {
 const FEATURES = [
   {
     iconKey: "diagnose",
-    title: "AI-Powered Diagnostics",
+    title: "Smart Diagnostics",
     desc: "Instantly identify your knowledge gaps with adaptive quizzes that learn from every answer you give.",
   },
   {
@@ -87,7 +87,7 @@ function LandingPage() {
           {/* Left — text */}
           <div className="flex-1 text-center lg:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-amber-brand/30 bg-amber-brand/8 px-4 py-1.5 text-xs font-bold text-amber-brand mb-6 tracking-widest uppercase">
-              AI-first learning platform
+              Adaptive learning platform
             </span>
 
             <h1 className="text-5xl sm:text-6xl font-extrabold text-text-primary leading-[1.08] tracking-tight">
@@ -121,7 +121,7 @@ function LandingPage() {
             {/* Trust badges */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8">
               {[
-                { icon: <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>, label: "AI-powered diagnostics" },
+                { icon: <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>, label: "Smart diagnostics" },
                 { icon: <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>, label: "Personalised learning paths" },
                 { icon: <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>, label: "XP &amp; progress tracking" },
               ].map((b) => (
@@ -194,7 +194,7 @@ function LandingPage() {
 
         <div className="grid sm:grid-cols-3 gap-8">
           {[
-            { step: "01", iconKey: "diagnose", title: "Diagnose", desc: "Take a smart quiz. Our AI pinpoints exactly which concepts need attention — not just what you got wrong." },
+            { step: "01", iconKey: "diagnose", title: "Diagnose", desc: "Take a smart quiz that pinpoints exactly which concepts need attention — not just what you got wrong." },
             { step: "02", iconKey: "path", title: "Follow Your Path", desc: "Get a personalised roadmap with the right concepts in the right order, no guesswork needed." },
             { step: "03", iconKey: "progress", title: "Level Up", desc: "Complete missions, earn XP, and watch your mastery grow week by week." },
           ].map(({ step, iconKey, title, desc }) => (
@@ -385,9 +385,9 @@ export default function HomePage() {
       {/* ═══ Quick Actions ═══ */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
         {[
-          { to: "/diagnose", iconKey: "diagnose", label: "Run Diagnosis", desc: "Find your gaps" },
           { to: "/pathfinder", iconKey: "path", label: "Learning Path", desc: "Follow your roadmap" },
           { to: "/questions", iconKey: "mission", label: "Missions", desc: "Practice & earn XP" },
+          { to: "/simulations", iconKey: "mission", label: "Simulations", desc: "Explore & Learn" }, // Added Simulations as replacement
           { to: "/progress", iconKey: "progress", label: "Progress", desc: "Track your growth" },
         ].map(({ to, iconKey, label, desc }) => (
           <Link

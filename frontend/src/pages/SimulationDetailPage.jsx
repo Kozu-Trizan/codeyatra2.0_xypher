@@ -1,18 +1,34 @@
 import { useParams, useNavigate } from "react-router-dom";
 import VectorDecomposition from "../components/simulations/physics/VectorDecomposition";
 import FunctionGraphing from "../components/simulations/mathematics/FunctionGraphing";
+import AreaUnderCurves from "../components/simulations/mathematics/AreaUnderCurves";
+import ProjectileMotion from "../components/simulations/physics/ProjectileMotion";
+import PendulumSim from "../components/simulations/physics/PendulumSim";
+import WaveSim from "../components/simulations/physics/WaveSim";
+import CircuitBuilder from "../components/simulations/physics/CircuitBuilder";
 import MolecularStructure from "../components/simulations/chemistry/MolecularStructure";
 
+/* Maps route :type (simulation_type) directly to its component */
 const COMPONENTS = {
-  physics: VectorDecomposition,
-  math: FunctionGraphing,
-  chemistry: MolecularStructure,
+  vector_decomposition: VectorDecomposition,
+  function_graphing:    FunctionGraphing,
+  area_under_curve:     AreaUnderCurves,
+  projectile_motion:    ProjectileMotion,
+  pendulum_sim:         PendulumSim,
+  wave_sim:             WaveSim,
+  circuit_builder:      CircuitBuilder,
+  molecular_structure:  MolecularStructure,
 };
 
 const LABELS = {
-  physics: "Physics",
-  math: "Mathematics",
-  chemistry: "Chemistry",
+  vector_decomposition: "Physics",
+  function_graphing:    "Mathematics",
+  area_under_curve:     "Mathematics",
+  projectile_motion:    "Physics",
+  pendulum_sim:         "Physics",
+  wave_sim:             "Physics",
+  circuit_builder:      "Physics",
+  molecular_structure:  "Chemistry",
 };
 
 export default function SimulationDetailPage() {

@@ -22,7 +22,7 @@ export default function SignupPage() {
     if (user) navigate("/", { replace: true });
   }, [user, navigate]);
 
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "", grade: "" });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,6 +39,7 @@ export default function SignupPage() {
     const errs = {};
     if (!form.name.trim()) errs.name = "Name is required.";
     if (!form.email.includes("@")) errs.email = "Enter a valid email.";
+    if (!form.grade) errs.grade = "Please select your grade/class.";
     if (form.password.length < 6) errs.password = "At least 6 characters.";
     if (form.password !== form.confirm) errs.confirm = "Passwords do not match.";
     return errs;
@@ -50,7 +51,7 @@ export default function SignupPage() {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setLoading(true);
     try {
-      const result = await signup({ name: form.name, email: form.email, password: form.password });
+      const result = await signup({ name: form.name, email: form.email, password: form.password, grade: form.grade });
       if (!result.ok) { setServerError(result.error); return; }
       navigate("/onboarding", { replace: true });
     } catch {
@@ -94,6 +95,29 @@ export default function SignupPage() {
                   placeholder="Swarnim Shrestha" className={inputBase(errors.name)} />
               </div>
               {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+            </div>
+
+            {/* Grade */}
+            <div>
+              <label className="block text-xs font-semibold text-text-secondary mb-1.5">Class/Grade</label>
+              <div className="relative">
+                <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.499 5.516 50.552 50.552 0 00-2.658.813m-15.482 0A50.553 50.553 0 0112 13.489a50.551 50.551 0 0110.499-3.342" />
+                </svg>
+                <select name="grade" value={form.grade} onChange={handleChange} required className={`${inputBase(errors.grade)} appearance-none`}>
+                  <option value="" disabled>Select your class/grade</option>
+                  <option value="9">Grade 9</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </div>
+              </div>
+              {errors.grade && <p className="mt-1 text-xs text-red-500">{errors.grade}</p>}
             </div>
 
             {/* Email */}

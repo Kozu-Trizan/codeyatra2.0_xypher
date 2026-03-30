@@ -94,6 +94,11 @@ def seed_concepts():
         "calculus_basics": ("math", "Calculus"),
         "area_under_curves": ("math", "Calculus"),
 
+        "newtons_laws": ("physics", "Mechanics"),
+        "work_energy_power": ("physics", "Mechanics"),
+        "simple_harmonic_motion": ("physics", "Oscillations & Waves"),
+        "wave_motion": ("physics", "Oscillations & Waves"),
+        "current_electricity": ("physics", "Electricity"),
     }
 
     # Concepts that are NOT directly in the NEB syllabus chapters
@@ -677,7 +682,7 @@ def seed_simulations():
         },
         {
             "concept_slug": "area_under_curves",
-            "simulation_type": "function_graphing",
+            "simulation_type": "area_under_curve",
             "title": "Area Under Curves Explorer",
             "description": (
                 "Visualise definite integrals by shading the region between "
@@ -704,6 +709,66 @@ def seed_simulations():
                 "molecule": "propene",
                 "reagent": "HBr",
                 "expected_product": "2-bromopropane",
+            },
+        },
+        {
+            "concept_slug": "projectile_motion",
+            "simulation_type": "projectile_motion",
+            "title": "Projectile Motion Simulator",
+            "description": (
+                "Launch a projectile at various angles and speeds. Observe the "
+                "parabolic trajectory, measure range, max height and flight time. "
+                "Discover why 45° gives maximum range."
+            ),
+            "configuration": {
+                "default_angle": 45,
+                "default_speed": 25,
+                "gravity": 9.81,
+            },
+        },
+        {
+            "concept_slug": "simple_harmonic_motion",
+            "simulation_type": "pendulum_sim",
+            "title": "Pendulum & SHM Explorer",
+            "description": (
+                "Swing a virtual pendulum and investigate period dependence "
+                "on length, mass, and amplitude. Experience simple harmonic "
+                "motion first-hand."
+            ),
+            "configuration": {
+                "default_length": 1.5,
+                "default_angle": 30,
+                "g": 9.81,
+            },
+        },
+        {
+            "concept_slug": "wave_motion",
+            "simulation_type": "wave_sim",
+            "title": "Wave Motion & Superposition",
+            "description": (
+                "Generate transverse waves and adjust amplitude, frequency, "
+                "and wavelength. Enable a second wave to explore constructive "
+                "and destructive interference."
+            ),
+            "configuration": {
+                "default_frequency": 1.5,
+                "default_amplitude": 1.0,
+                "wave_speed": 150,
+            },
+        },
+        {
+            "concept_slug": "current_electricity",
+            "simulation_type": "circuit_builder",
+            "title": "Circuit Builder & Ohm's Law",
+            "description": (
+                "Build series and parallel circuits with resistors, toggle "
+                "a switch, and read current/voltage/power. Verify V=IR and "
+                "explore how total resistance changes."
+            ),
+            "configuration": {
+                "default_voltage": 12,
+                "max_resistors": 5,
+                "modes": ["series", "parallel"],
             },
         },
     ]
